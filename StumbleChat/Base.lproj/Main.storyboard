@@ -19,21 +19,30 @@
                         <viewControllerLayoutGuide type="top" id="So5-Wv-wfS"/>
                         <viewControllerLayoutGuide type="bottom" id="Rao-If-x16"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="TsH-UZ-tPk">
+                    <view key="view" contentMode="scaleToFill" id="83i-gw-jH6">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stumbl" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jDu-Op-Gj8">
-                                <rect key="frame" x="119.5" y="311" width="136" height="45"/>
-                                <fontDescription key="fontDescription" name="Arial-BoldItalicMT" family="Arial" pointSize="40"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="WoolyBear" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="upO-9E-f4A">
+                                <rect key="frame" x="83" y="435" width="209" height="45"/>
+                                <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="40"/>
                                 <color key="textColor" red="0.20784313730000001" green="0.84111870659999999" blue="0.51614040800000005" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Woolybear" translatesAutoresizingMaskIntoConstraints="NO" id="NrH-8a-ucK">
+                                <rect key="frame" x="56" y="152" width="263" height="263"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="NrH-8a-ucK" secondAttribute="height" multiplier="1:1" id="h6g-2e-9E2"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="0.63045247400000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="jDu-Op-Gj8" firstAttribute="centerX" secondItem="TsH-UZ-tPk" secondAttribute="centerX" id="QRq-Jo-yUr"/>
-                            <constraint firstItem="jDu-Op-Gj8" firstAttribute="centerY" secondItem="TsH-UZ-tPk" secondAttribute="centerY" id="VfW-u8-J93"/>
+                            <constraint firstItem="NrH-8a-ucK" firstAttribute="width" secondItem="83i-gw-jH6" secondAttribute="width" multiplier="0.7" id="UCO-bx-d2o"/>
+                            <constraint firstItem="upO-9E-f4A" firstAttribute="centerX" secondItem="83i-gw-jH6" secondAttribute="centerX" id="ahb-Ug-Xaw"/>
+                            <constraint firstItem="upO-9E-f4A" firstAttribute="top" secondItem="NrH-8a-ucK" secondAttribute="bottom" constant="20" id="bNi-qh-7Ws"/>
+                            <constraint firstItem="NrH-8a-ucK" firstAttribute="centerX" secondItem="83i-gw-jH6" secondAttribute="centerX" id="fSD-pc-cGr"/>
+                            <constraint firstItem="NrH-8a-ucK" firstAttribute="centerY" secondItem="83i-gw-jH6" secondAttribute="centerY" constant="-50" id="wjK-g5-HD6"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -77,29 +86,32 @@
                                 <color key="textColor" red="0.0" green="0.47843137250000001" blue="0.63045247400000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stumbl" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IdM-DE-O66">
-                                <rect key="frame" x="148.5" y="28" width="78" height="26"/>
-                                <fontDescription key="fontDescription" name="Arial-BoldItalicMT" family="Arial" pointSize="23"/>
-                                <color key="textColor" red="0.0" green="0.47843137250000001" blue="0.63045247400000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Woolybear" translatesAutoresizingMaskIntoConstraints="NO" id="BIX-mt-RUv">
+                                <rect key="frame" x="88" y="50" width="200.5" height="200"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="BIX-mt-RUv" secondAttribute="height" multiplier="1:1" id="aKW-J7-gr6"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.20784313725490194" green="0.83921568627450982" blue="0.51764705882352935" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="05h-Mb-8RZ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="2Bz-VX-HWu"/>
+                            <constraint firstItem="BIX-mt-RUv" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="30" id="60P-wA-R3y"/>
                             <constraint firstItem="05h-Mb-8RZ" firstAttribute="top" secondItem="fL5-4T-s8j" secondAttribute="bottom" constant="75" id="9Zw-3c-6V2"/>
                             <constraint firstItem="05h-Mb-8RZ" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="DQR-sP-18T"/>
                             <constraint firstItem="V2z-vh-aXL" firstAttribute="leading" secondItem="fL5-4T-s8j" secondAttribute="leading" id="E2T-es-bc1"/>
                             <constraint firstItem="05h-Mb-8RZ" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.4" id="HBV-oA-WGM"/>
+                            <constraint firstItem="BIX-mt-RUv" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Tfy-4D-JLa"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="05h-Mb-8RZ" secondAttribute="bottom" id="cBU-PJ-qbZ"/>
-                            <constraint firstItem="IdM-DE-O66" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="dqL-TN-BCz"/>
+                            <constraint firstItem="BIX-mt-RUv" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" multiplier="0.3" id="hwR-p6-iBx"/>
                             <constraint firstItem="fL5-4T-s8j" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.7" id="lVY-H5-Wua"/>
                             <constraint firstItem="fL5-4T-s8j" firstAttribute="top" secondItem="V2z-vh-aXL" secondAttribute="bottom" constant="8" id="ljV-Ad-e17"/>
-                            <constraint firstItem="IdM-DE-O66" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="mFH-5S-3oz"/>
                             <constraint firstItem="fL5-4T-s8j" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="mhv-mU-1og"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="bearImage" destination="BIX-mt-RUv" id="T7N-o7-KyN"/>
+                        <outlet property="displayLbl" destination="V2z-vh-aXL" id="DXU-x6-QX0"/>
                         <outlet property="displayNameText" destination="fL5-4T-s8j" id="KRt-qw-ynC"/>
                         <segue destination="kA2-iE-cyB" kind="custom" identifier="toSearchView" customClass="SegueFromRight" customModule="StumbleChat" customModuleProvider="target" id="UG6-fO-Oly"/>
                         <segue destination="tVQ-63-cdJ" kind="custom" identifier="toAboutView" customClass="SegueFromLeft" customModule="StumbleChat" customModuleProvider="target" id="edN-ni-9NU"/>
@@ -107,7 +119,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="278" y="123"/>
+            <point key="canvasLocation" x="277.60000000000002" y="122.78860569715144"/>
         </scene>
         <!--Search View Controller-->
         <scene sceneID="7Un-jF-d7p">
@@ -167,8 +179,8 @@
                                     <constraint firstItem="Ybg-jN-2bn" firstAttribute="leading" secondItem="Cfu-aq-ely" secondAttribute="trailing" id="wHk-nr-LzT"/>
                                 </constraints>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stumbling..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Acz-oI-Xiv">
-                                <rect key="frame" x="107.5" y="192.5" width="160.5" height="31.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Searching..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Acz-oI-Xiv">
+                                <rect key="frame" x="108.5" y="192.5" width="159" height="31.5"/>
                                 <fontDescription key="fontDescription" name="Arial-BoldItalicMT" family="Arial" pointSize="28"/>
                                 <color key="textColor" red="0.20784313730000001" green="0.84111870659999999" blue="0.51614040800000005" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -204,7 +216,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qm7-d8-GdS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1629.5999999999999" y="-629.2353823088456"/>
+            <point key="canvasLocation" x="1409" y="-629"/>
         </scene>
         <!--Message View-->
         <scene sceneID="Ey7-Mg-alu">
@@ -218,7 +230,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vr7-eQ-l06">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vr7-eQ-l06">
                                 <rect key="frame" x="166" y="28" width="42" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="13"/>
@@ -237,7 +249,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="l9W-ju-mPD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1629.5999999999999" y="122.78860569715144"/>
+            <point key="canvasLocation" x="1409" y="123"/>
         </scene>
         <!--AboutViewController-->
         <scene sceneID="ald-zM-Fgs">
@@ -257,20 +269,20 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="App Icon from: https://icons8.com. Check them out they're pretty neat." lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3lZ-b0-6n4">
-                                <rect key="frame" x="10" y="166" width="355" height="38"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Made by FenApnu productions" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3lZ-b0-6n4">
+                                <rect key="frame" x="10" y="628" width="355" height="19"/>
                                 <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="0.63137254899999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="3lZ-b0-6n4" firstAttribute="width" secondItem="IQh-kw-7ps" secondAttribute="width" constant="-20" id="2Pv-7e-kRw"/>
                             <constraint firstItem="3lZ-b0-6n4" firstAttribute="centerX" secondItem="IQh-kw-7ps" secondAttribute="centerX" id="IzT-kq-xNU"/>
-                            <constraint firstItem="3lZ-b0-6n4" firstAttribute="top" secondItem="V2L-ji-gJY" secondAttribute="bottom" constant="70" id="bOB-AF-XpQ"/>
                             <constraint firstItem="V2L-ji-gJY" firstAttribute="top" secondItem="FAQ-c1-YJY" secondAttribute="bottom" constant="48" id="g3b-CW-EkQ"/>
                             <constraint firstItem="V2L-ji-gJY" firstAttribute="centerX" secondItem="IQh-kw-7ps" secondAttribute="centerX" id="pAA-P1-jDt"/>
+                            <constraint firstItem="05p-UO-xeI" firstAttribute="top" secondItem="3lZ-b0-6n4" secondAttribute="bottom" constant="20" id="v6y-Kx-SQB"/>
                         </constraints>
                     </view>
                     <connections>
@@ -282,8 +294,11 @@
             <point key="canvasLocation" x="-740" y="122.78860569715144"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Woolybear" width="3000" height="3000"/>
+    </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="Tge-2Y-Gvn"/>
         <segue reference="UG6-fO-Oly"/>
-        <segue reference="Nac-cy-fPn"/>
     </inferredMetricsTieBreakers>
 </document>

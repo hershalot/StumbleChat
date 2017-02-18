@@ -8,15 +8,20 @@
 
 import UIKit
 import Firebase
+import EAIntroView
 
-class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate {
+class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate, EAIntroDelegate {
     
     var uid: NSString = ""
     var displayName:String = ""
     var alert: UIAlertController? = nil
     var ref: FIRDatabaseReference!
+    var introView: EAIntroView!
     
+    @IBOutlet weak var bearImage: UIImageView!
     
+    //displayLabel
+    @IBOutlet weak var displayLbl: UILabel!
     
     //mark Outlets
     @IBOutlet weak var displayNameText: UITextField!
@@ -31,6 +36,7 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     }
     
     func startChat(){
+        
         if(displayNameText.text != ""){
             
             let defaults = UserDefaults.standard;
@@ -81,9 +87,9 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         swipeLeft.direction = UISwipeGestureRecognizerDirection.left
         self.view.addGestureRecognizer(swipeLeft)
         
-        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
-        swipeRight.direction = UISwipeGestureRecognizerDirection.right
-        self.view.addGestureRecognizer(swipeRight)
+//        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
+//        swipeRight.direction = UISwipeGestureRecognizerDirection.right
+//        self.view.addGestureRecognizer(swipeRight)
         
         
         let defaults = UserDefaults.standard;
@@ -94,6 +100,24 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
             displayNameText.text = displayName as String;
             
         }
+        
+        if (defaults.bool(forKey: "isFirstRun")){
+            self.showIntro()
+            
+        }
+        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        
+        let statusHeight: CGFloat = UIApplication.shared.statusBarFrame.height
+        let bottom = displayLbl.frame.origin.y
+        
+        let bearImageHeight = bearImage.frame.size.height / 2.0
+        
+        let centerY = bottom / 2
+        
+        bearImage.frame.origin.y = centerY - bearImageHeight + (statusHeight / 2.0)
         
     }
 
@@ -109,14 +133,17 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         
         //decide which pool to add user too -- add to pool with least users, Default to aggressive pool when the same
         
-        
+        //darken this view
+        let overlayView: UIView = UIView.init(frame: self.view.bounds)
+        overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
+        self.view.addSubview(overlayView)
         
         
         if(segue.identifier == "toSearchView"){
 //            var userID: String = (FIRAuth.auth()?.currentUser?.uid)!
             
             print("To Search View")
-            
+
             
 //            let searchView:SearchViewController = segue.destination as! SearchViewController
         }
@@ -124,6 +151,45 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
             
     }
     
+    
+    func showIntro(){
+        
+        let page1 = EAIntroPage.init()
+        page1.title = "Welcome To WoolyBear"
+        page1.desc = "Start chatting with random people today";
+//        page1.bgImage = UIImage(named: "AppIcon")
+        
+        let page2 = EAIntroPage.init()
+        page2.title = "Swipe Left to Search"
+        
+        
+        let page3 = EAIntroPage.init()
+        page3.title = "Swipe Right to Stop"
+        
+        introView = EAIntroView.init(frame: self.view.bounds, andPages: [page1,page2,page3])
+        introView.backgroundColor = UIColor.init(red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.8)
+
+        introView.delegate = self
+        
+        introView.show(in: self.view)
+    }
+    
+    func introDidFinish(_ introView: EAIntroView!, wasSkipped: Bool) {
+        
+        let defaults = UserDefaults.standard
+        if (wasSkipped) {
+
+            print("Intro Skipped")
+            defaults.set(false, forKey: "isFirstRun")
+            
+        } else {
+            
+            defaults.set(false, forKey: "isFirstRun")
+            print("Intro finished")
+        }
+        defaults.synchronize()
+    }
+
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
@@ -144,10 +210,13 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     
     func respondToSwipeGesture(gesture: UIGestureRecognizer) {
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
+            
             switch swipeGesture.direction {
+                
             case UISwipeGestureRecognizerDirection.right:
                 print("Swiped right")
                 performSegue(withIdentifier: "toAboutView", sender: nil)
+                
             case UISwipeGestureRecognizerDirection.down:
                 print("Swiped down")
                 displayNameText.resignFirstResponder()
@@ -155,15 +224,14 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
             case UISwipeGestureRecognizerDirection.left:
                 print("Swiped left")
                 startChat()
+                
             case UISwipeGestureRecognizerDirection.up:
                 print("Swiped up")
+                
             default:
                 break
             }
         }
     }
-    
-
-
 }
 

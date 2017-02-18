@@ -10,7 +10,6 @@
 		5E19270D1E52095A00AFBE49 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E19270C1E52095A00AFBE49 /* AppDelegate.swift */; };
 		5E19270F1E52095A00AFBE49 /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E19270E1E52095A00AFBE49 /* StartViewController.swift */; };
 		5E1927121E52095A00AFBE49 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E1927101E52095A00AFBE49 /* Main.storyboard */; };
-		5E1927141E52095A00AFBE49 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E1927131E52095A00AFBE49 /* Assets.xcassets */; };
 		5E1927171E52095A00AFBE49 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E1927151E52095A00AFBE49 /* LaunchScreen.storyboard */; };
 		5E19271F1E52402D00AFBE49 /* MessagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E19271E1E52402D00AFBE49 /* MessagingViewController.swift */; };
 		5E1927241E5258B900AFBE49 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5E1927231E5258B900AFBE49 /* GoogleService-Info.plist */; };
@@ -18,6 +17,7 @@
 		5EA68FAE1E53751500E9306D /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA68FAD1E53751500E9306D /* SearchViewController.swift */; };
 		5EA68FB01E53BCA400E9306D /* SegueFromRight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA68FAF1E53BCA400E9306D /* SegueFromRight.swift */; };
 		5EA68FB31E5522B500E9306D /* SegueFromLeft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA68FB21E5522B500E9306D /* SegueFromLeft.swift */; };
+		5EBFA9F91E57D67400406B38 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5EBFA9F81E57D67400406B38 /* Assets.xcassets */; };
 		8F47D14A67B8E822BD950D97 /* Pods_StumbleChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD413D087B598464DC677CA8 /* Pods_StumbleChat.framework */; };
 /* End PBXBuildFile section */
 
@@ -27,7 +27,6 @@
 		5E19270C1E52095A00AFBE49 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5E19270E1E52095A00AFBE49 /* StartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
 		5E1927111E52095A00AFBE49 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		5E1927131E52095A00AFBE49 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5E1927161E52095A00AFBE49 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5E1927181E52095A00AFBE49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5E19271E1E52402D00AFBE49 /* MessagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagingViewController.swift; sourceTree = "<group>"; };
@@ -38,6 +37,7 @@
 		5EA68FAF1E53BCA400E9306D /* SegueFromRight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegueFromRight.swift; sourceTree = "<group>"; };
 		5EA68FB11E54EADE00E9306D /* StumbleChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StumbleChat.entitlements; sourceTree = "<group>"; };
 		5EA68FB21E5522B500E9306D /* SegueFromLeft.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegueFromLeft.swift; sourceTree = "<group>"; };
+		5EBFA9F81E57D67400406B38 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6EABB3793D039A982E48A120 /* Pods-StumbleChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StumbleChat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StumbleChat/Pods-StumbleChat.debug.xcconfig"; sourceTree = "<group>"; };
 		CD413D087B598464DC677CA8 /* Pods_StumbleChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_StumbleChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -80,7 +80,7 @@
 				5E19270C1E52095A00AFBE49 /* AppDelegate.swift */,
 				5E19270E1E52095A00AFBE49 /* StartViewController.swift */,
 				5E1927101E52095A00AFBE49 /* Main.storyboard */,
-				5E1927131E52095A00AFBE49 /* Assets.xcassets */,
+				5EBFA9F81E57D67400406B38 /* Assets.xcassets */,
 				5E1927151E52095A00AFBE49 /* LaunchScreen.storyboard */,
 				5E1927181E52095A00AFBE49 /* Info.plist */,
 				5E19271E1E52402D00AFBE49 /* MessagingViewController.swift */,
@@ -149,7 +149,7 @@
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Push = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -180,7 +180,7 @@
 			files = (
 				5E1927171E52095A00AFBE49 /* LaunchScreen.storyboard in Resources */,
 				5E1927241E5258B900AFBE49 /* GoogleService-Info.plist in Resources */,
-				5E1927141E52095A00AFBE49 /* Assets.xcassets in Resources */,
+				5EBFA9F91E57D67400406B38 /* Assets.xcassets in Resources */,
 				5E1927121E52095A00AFBE49 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -343,7 +343,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Justin Hershey (YKN8DC38G3)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -370,7 +370,6 @@
 			baseConfigurationReference = 6EABB3793D039A982E48A120 /* Pods-StumbleChat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = StumbleChat/StumbleChat.entitlements;
 				DEVELOPMENT_TEAM = YKN8DC38G3;
 				INFOPLIST_FILE = StumbleChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -385,7 +384,6 @@
 			baseConfigurationReference = 4697CF6658A231386459F112 /* Pods-StumbleChat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = StumbleChat/StumbleChat.entitlements;
 				DEVELOPMENT_TEAM = YKN8DC38G3;
 				INFOPLIST_FILE = StumbleChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

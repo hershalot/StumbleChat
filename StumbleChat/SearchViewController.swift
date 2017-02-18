@@ -1,3 +1,4 @@
+
 //
 //  SearchViewController.swift
 //  StumbleChat
@@ -8,6 +9,7 @@
 
 import UIKit
 import Firebase
+import SystemConfiguration
 
 class SearchViewController: UIViewController {
     
@@ -16,7 +18,7 @@ class SearchViewController: UIViewController {
 //    let mToken = FIRInstanceID.instanceID().token()
     var ref: FIRDatabaseReference!
     var userID: String = (FIRAuth.auth()?.currentUser?.uid)!
-    
+
     
     var boldHighlight: Int = 2;
     
@@ -64,13 +66,30 @@ class SearchViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(appWillTerminate), name: NSNotification.Name.UIApplicationWillTerminate, object: nil)
         
         
-        
         let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
         swipeRight.direction = UISwipeGestureRecognizerDirection.right
         self.view.addGestureRecognizer(swipeRight)
         
-        setPool()
         
+        
+        if (self.connectedToNetwork()){
+            setPool()
+            
+        }else{
+        
+            let alertController = UIAlertController(title: "Warning", message: "No Internet Connection", preferredStyle: .alert)
+        
+            let defaultAction = UIAlertAction(title: "OK", style: .default){ action in
+                
+
+                self.performSegue(withIdentifier: "toStartView", sender: nil)
+                
+            }
+            alertController.addAction(defaultAction)
+        
+            present(alertController, animated: true, completion: nil)
+        
+        }
         
 
         // Do any additional setup after loading the view.
@@ -95,6 +114,7 @@ class SearchViewController: UIViewController {
         let refWatch = ref.child(myCurrentPool).child(self.userID)
         refWatch.removeAllObservers()
         refWatch.removeValue()
+        try! FIRAuth.auth()!.signOut()
         
     }
 
@@ -402,10 +422,15 @@ class SearchViewController: UIViewController {
     func respondToSwipeGesture(gesture: UIGestureRecognizer) {
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
             switch swipeGesture.direction {
+                
             case UISwipeGestureRecognizerDirection.right:
                 print("Swiped right")
                 let cxnCheckRef = ref.child(myCurrentPool).child(self.userID)
+                    
+                    
+                cxnCheckRef.removeAllObservers()
                 
+                performSegue(withIdentifier: "toStartView", sender: nil)
 //                cxnCheckRef.observeSingleEvent(of: .value, with: { (snapshot) in
 //                    
 //                    let uDict = snapshot.value as! [String : String] 
@@ -429,8 +454,7 @@ class SearchViewController: UIViewController {
 //                    
 //                })
                 
-                cxnCheckRef.removeAllObservers()
-                performSegue(withIdentifier: "toStartView", sender: nil)
+                
                 
             case UISwipeGestureRecognizerDirection.down:
                 print("Swiped down")
@@ -464,6 +488,11 @@ class SearchViewController: UIViewController {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
         
+        //darken this view
+        let overlayView: UIView = UIView.init(frame: self.view.bounds)
+        overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
+        self.view.addSubview(overlayView)
+        
         if(segue.identifier == "toMessagingView"){
             
             //remove my pool data
@@ -471,6 +500,7 @@ class SearchViewController: UIViewController {
             
 //            let dnc = segue.destination as! UINavigationController
 //            let mvc: MessagingViewController = dnc.topViewController as! MessagingViewController
+            
             
             let mvc:MessagingViewController = segue.destination as! MessagingViewController
             
@@ -483,6 +513,7 @@ class SearchViewController: UIViewController {
         }
         if(segue.identifier == "toStartView"){
             
+            
             ref.child(self.myCurrentPool).child(self.userID).removeValue()
             
             
@@ -491,5 +522,33 @@ class SearchViewController: UIViewController {
         
     }
     
+    //check for internet connection, returns true if there is a connection
+    func connectedToNetwork() -> Bool {
+        
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+        
+        guard let defaultRouteReachability = withUnsafePointer(to: &zeroAddress, {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                SCNetworkReachabilityCreateWithAddress(nil, $0)
+            }
+        }) else {
+            return false
+        }
+        
+        var flags: SCNetworkReachabilityFlags = []
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
+            return false
+        }
+        
+        let isReachable = flags.contains(.reachable)
+        let needsConnection = flags.contains(.connectionRequired)
+        
+        return (isReachable && !needsConnection)
+    }
+    
     
 }
+
+

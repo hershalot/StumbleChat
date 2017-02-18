@@ -6,6 +6,8 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -21,16 +23,25 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stumbl" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nmj-NK-DGy">
-                                <rect key="frame" x="120" y="311.5" width="136" height="45"/>
-                                <fontDescription key="fontDescription" name="Arial-BoldItalicMT" family="Arial" pointSize="40"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="WoolyBear" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nmj-NK-DGy">
+                                <rect key="frame" x="83" y="435" width="209" height="45"/>
+                                <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="40"/>
                                 <color key="textColor" red="0.20784313730000001" green="0.84111870659999999" blue="0.51614040800000005" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Woolybear" translatesAutoresizingMaskIntoConstraints="NO" id="59i-lL-nbd">
+                                <rect key="frame" x="56" y="152" width="263" height="263"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="59i-lL-nbd" secondAttribute="height" multiplier="1:1" id="F9O-eS-FO0"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="0.63045247400000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Nmj-NK-DGy" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="FTh-SM-q7L"/>
+                            <constraint firstItem="59i-lL-nbd" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.7" id="AOA-Ew-bhT"/>
+                            <constraint firstItem="Nmj-NK-DGy" firstAttribute="top" secondItem="59i-lL-nbd" secondAttribute="bottom" constant="20" id="FCF-1Z-fLE"/>
+                            <constraint firstItem="59i-lL-nbd" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="GcR-Wa-ReS"/>
+                            <constraint firstItem="59i-lL-nbd" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-50" id="U0T-fl-c86"/>
                             <constraint firstItem="Nmj-NK-DGy" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="kLC-wn-5PF"/>
                         </constraints>
                     </view>
@@ -40,4 +51,7 @@
             <point key="canvasLocation" x="52" y="374.66266866566718"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Woolybear" width="3000" height="3000"/>
+    </resources>
 </document>

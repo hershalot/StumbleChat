@@ -23,8 +23,8 @@ class SegueFromRight: UIStoryboardSegue {
             
             UIView.animate(withDuration: 0.7,
                                        delay: 0.0,
-                                       usingSpringWithDamping: 0.4,
-                                       initialSpringVelocity: 0.4,
+                                       usingSpringWithDamping: 0.6,
+                                       initialSpringVelocity: 0.3,
                                        options: UIViewAnimationOptions.curveEaseInOut,
                                        animations: {
                                         dst.view.transform = CGAffineTransform(translationX: 0, y: 0)

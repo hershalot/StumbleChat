@@ -21,7 +21,7 @@ class SegueFromLeft: UIStoryboardSegue {
         
         UIView.animate(withDuration: 0.7,
                        delay: 0.0,
-                       usingSpringWithDamping: 0.4,
+                       usingSpringWithDamping: 0.6,
                        initialSpringVelocity: 0.4,
                        options: UIViewAnimationOptions.curveEaseInOut,
                        animations: {

@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import UserNotifications
+import SystemConfiguration
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -18,38 +19,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        
+        //network connection check
+        if (self.connectedToNetwork()){
+            
+            
+            FIRApp.configure()
+            
+            self.loginAnon()
+            
+            
+        }else{
+            
+            
+            let alertController = UIAlertController(title: "Warning", message: "No Internet Connection", preferredStyle: .alert)
+            
+            let defaultAction = UIAlertAction(title: "OK", style: .default)
+            alertController.addAction(defaultAction)
+            
+            DispatchQueue.main.async {
+                
+                //SHOW INTERNET NOT AVAILABLE ALERTVIEW
+
+                self.window?.rootViewController?.present(alertController, animated: true, completion: nil)
+                
+            }
+
+        }
 
         
-//        if #available(iOS 10.0, *) {
-//            let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-//            UNUserNotificationCenter.current().requestAuthorization(
-//                options: authOptions,
-//                completionHandler: {_, _ in })
-//            
-//            // For iOS 10 display notification (sent via APNS)
-//            UNUserNotificationCenter.current().delegate = self
-//            // For iOS 10 data message (sent via FCM)
-//            FIRMessaging.messaging().remoteMessageDelegate = self
-//            
-//        } else {
-//            let settings: UIUserNotificationSettings =
-//                UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
-//            application.registerUserNotificationSettings(settings)
-//        }
-//        
-//        application.registerForRemoteNotifications()
-        
-        FIRApp.configure()
-        
-        self.loginAnon()
-        
-        
-        
-        // Add observer for InstanceID token refresh callback.
-//        NotificationCenter.default.addObserver(self,
-//                                                         selector: #selector(self.tokenRefreshNotification),
-//                                                         name: NSNotification.Name.firInstanceIDTokenRefresh,
-//                                                         object: nil)
+
         
         return true
     }
@@ -79,50 +79,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+//        try! FIRAuth.auth()!.signOut()
     }
 
-//    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
-//        
-//        
-////        FIRInstanceID.instanceID().setAPNSToken(deviceToken as Data, type: FIRInstanceIDAPNSTokenType.unknown)
-//        
-//
-//        
-//    }
-    
-//    // [START receive_message]
-//    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject],
-//                     fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
-//
-//    }
-//    // [END receive_message]
-//    
-//
-//    func tokenRefreshNotification(_ notification: Notification) {
-//        if let refreshedToken = FIRInstanceID.instanceID().token() {
-//            print("InstanceID token: \(refreshedToken)")
-//        }
-//        
-//        // Connect to FCM since connection may have failed when attempted before having a token.
-//        connectToFcm()
-//    }
-//    
-//    // [START connect_to_fcm]
-//    func connectToFcm() {
-//        FIRMessaging.messaging().connect { (error) in
-//            if (error != nil) {
-//                print("Unable to connect with FCM. \(error)")
-//            } else {
-//                print("Connected to FCM.")
-//            }
-//        }
-//    }
-//    // [END connect_to_fcm]
+
     
     func loginAnon(){
         
         let defaults = UserDefaults.standard
         var name = defaults.string(forKey: "displayName")
+        let firstRun = defaults.string(forKey: "isFirstRun")
+        
+        if (firstRun == nil){
+            
+            defaults.set(true, forKey: "isFirstRun")
+            defaults.synchronize()
+        }
         
         if (name == nil){
             
@@ -150,33 +122,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     
     }
+    
+    //check for internet connection, returns true if there is a connection
+    func connectedToNetwork() -> Bool {
+        
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+        
+        guard let defaultRouteReachability = withUnsafePointer(to: &zeroAddress, {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                SCNetworkReachabilityCreateWithAddress(nil, $0)
+            }
+        }) else {
+            return false
+        }
+        
+        var flags: SCNetworkReachabilityFlags = []
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
+            return false
+        }
+        
+        let isReachable = flags.contains(.reachable)
+        let needsConnection = flags.contains(.connectionRequired)
+        
+        return (isReachable && !needsConnection)
+    }
 
 }
-
-//// [START ios_10_message_handling]
-//@available(iOS 10, *)
-//extension AppDelegate : UNUserNotificationCenterDelegate {
-//    
-//    // Receive displayed notifications for iOS 10 devices.
-//    func userNotificationCenter(center: UNUserNotificationCenter,
-//                                willPresentNotification notification: UNNotification,
-//                                withCompletionHandler completionHandler: (UNNotificationPresentationOptions) -> Void) {
-//        
-//        let userInfo = notification.request.content.userInfo
-//        // Print message ID.
-//        print("Message ID: \(userInfo["gcm.message_id"]!)")
-//        // Print full message.
-//        print("%@", userInfo)
-//    }
-//}
-//
-//extension AppDelegate : FIRMessagingDelegate {
-//    // Receive data message on iOS 10 devices.
-//    func applicationReceivedRemoteMessage(_ remoteMessage: FIRMessagingRemoteMessage) {
-//        print("%@", remoteMessage.appData)
-//    }
-//}
-//// [END ios_10_message_handling]
 
 
 

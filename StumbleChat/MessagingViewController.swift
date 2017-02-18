@@ -15,7 +15,7 @@ import Photos
 
 class MessagingViewController: JSQMessagesViewController {
 
-    
+    var alert: UIAlertController? = nil
     var channelID: String!
     var connectedUsersId: String!
     
@@ -34,6 +34,8 @@ class MessagingViewController: JSQMessagesViewController {
     private var newMessageRefHandle: FIRDatabaseHandle?
     private var updatedMessageRefHandle: FIRDatabaseHandle?
     
+    
+    //messages array
     var messages = [JSQMessage]()
     
     var contentSize = 0.0
@@ -41,28 +43,28 @@ class MessagingViewController: JSQMessagesViewController {
     lazy var outgoingBubbleImageView: JSQMessagesBubbleImage = self.setupOutgoingBubble()
     lazy var incomingBubbleImageView: JSQMessagesBubbleImage = self.setupIncomingBubble()
     
-    
     @IBOutlet weak var displayNameLbl: UILabel!
     
     override func viewDidLayoutSubviews() {
+        
         let statusHeight: CGFloat = UIApplication.shared.statusBarFrame.height
         self.collectionView.frame = CGRect(x: 0, y: statusHeight + 20.0, width: self.view.frame.size.width, height: self.collectionView.frame.height - (statusHeight + 20.0))
+        
     }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        //setting mRef to the the current messaging channel firebase ref being used
+
         mRef = mRef.child(channelID)
         
-//        self.scrollToBottom(animated: false)
         
         
         self.displayNameLbl.text = "chatting with " + self.senderDisplayName + "..."
         self.displayNameLbl.textColor = UIColor.lightGray
         self.displayNameLbl.backgroundColor = UIColor.clear
         self.displayNameLbl.textAlignment = .center
-//        self.displayNameLbl.font.
         
         let statusHeight: CGFloat = UIApplication.shared.statusBarFrame.height
         
@@ -70,14 +72,13 @@ class MessagingViewController: JSQMessagesViewController {
 
         self.view.addSubview(self.displayNameLbl)
         self.view.bringSubview(toFront: self.displayNameLbl)
-        
-//        contentSize = self.collectionView.bounds.height + 50.0
-        
-//        automaticallyScrollsToMostRecentMessage = true
+
         self.collectionView.collectionViewLayout.springinessEnabled = false
         
         //Add observer to the app resigning so we can kick the user back to the start screen and disconnect cleanly
-        NotificationCenter.default.addObserver(self, selector: #selector(appMovedToInactive), name: NSNotification.Name.UIApplicationWillTerminate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillTerminate), name: NSNotification.Name.UIApplicationWillTerminate, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(appMovedToInactive), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(appMovedToActive), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
 
@@ -89,37 +90,74 @@ class MessagingViewController: JSQMessagesViewController {
         swipeLeft.direction = UISwipeGestureRecognizerDirection.left
         self.view.addGestureRecognizer(swipeLeft)
         
-//        self.scrollToBottom(animated: false)
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
+        swipeRight.direction = UISwipeGestureRecognizerDirection.right
+        self.view.addGestureRecognizer(swipeRight)
+        
         observeMessages()
         
     }
-    
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        
-////        contentSize = self.collectionView.contentSize
-////        if (contentSize.height > self.collectionView.bounds.size.height) {
-////            let targetContentOffset = CGPoint(x:0.0, y:contentSize.height - self.collectionView.bounds.size.height)
-////            self.collectionView.setContentOffset(targetContentOffset, animated:true);
-////        }
-////  
-//        print("contentSize: " + String(describing: self.collectionView.contentSize.height))
-//        print("Bounds Height: " + String(describing: self.collectionView.bounds.size.height))
-//        
-//        
-////
-//    }
+
     
     //send the disconnect signal sequence and kick user back to start screen
-    func appMovedToInactive(_ animated: Bool) {
+    func appWillTerminate(_ animated: Bool) {
         
         print("App Moving to Inactive")
         self.mRef.removeAllObservers()
-        performSegue(withIdentifier: "toSearchView", sender: nil)
+        if (!alreadyDisconnected){
+            
+            let itemRef = mRef.childByAutoId()
+            let messageItem = [
+                "senderId": senderId!,
+                "senderName": senderDisplayName!,
+                "text": "-1-2-3-4-5",
+                ]
+            
+            itemRef.setValue(messageItem)
+            finishSendingMessage()
+            
+        }
+        
+        //            storageRef.delete(completion: { (Void) in
+        //                print("Deleting Photos")
+        //            })
+        
+        mRef.removeValue()
+        try! FIRAuth.auth()!.signOut()
         
         
         
     }
+    
+    func appMovedToInactive(_ animated: Bool) {
+        
+        print("App Moving to Inactive")
+
+        
+        //if no messages send a placeholder message to backend or when becoming active again, chat will disconnect because it may not find any message data
+        if (messages.count == 0){
+            
+            let itemRef = mRef.childByAutoId()
+            let messageItem = [
+                "senderId": senderId!,
+                "senderName": senderDisplayName!,
+                "text": "placeholder",
+                ]
+            
+            itemRef.setValue(messageItem)
+            finishSendingMessage()
+            
+            
+        }
+        
+
+        
+        
+        
+    }
+    
+    
+    
     
     func appMovedToActive(_ animated: Bool) {
         
@@ -131,21 +169,20 @@ class MessagingViewController: JSQMessagesViewController {
             if snapshot.hasChild(self.channelID){
                 
                 print("chat still ongoing")
-//                self.observeMessages()
-                
+
             }else{
                 
                 print("chat no longer exists")
                 self.disconnected()
                 
             }
-            
-            
         })
-        
     }
+
+    
     
     deinit {
+        
         if let refHandle = newMessageRefHandle {
             mRef.removeObserver(withHandle: refHandle)
         }
@@ -188,6 +225,7 @@ class MessagingViewController: JSQMessagesViewController {
 
     
     override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageBubbleImageDataForItemAt indexPath: IndexPath!) -> JSQMessageBubbleImageDataSource! {
+        
         let message = messages[indexPath.item]
         if message.senderId == senderId {
             
@@ -226,15 +264,10 @@ class MessagingViewController: JSQMessagesViewController {
             "text": text!,
             ]
         
+        
+        
         itemRef.setValue(messageItem)
-        
-//        self.collectionView.contentOffset = CGPoint(x:0, y:self.collectionView.contentSize.height - self.collectionView.bounds.size.height);
-
-        
-        
         JSQSystemSoundPlayer.jsq_playMessageSentSound()
-        
-
         finishSendingMessage()
         
         
@@ -278,22 +311,6 @@ class MessagingViewController: JSQMessagesViewController {
         
         self.present(sheet, animated: true, completion: nil)
         
-        
-        
-        
-//        let picker = UIImagePickerController()
-//        picker.delegate = self
-//        if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)) {
-//            
-//            picker.sourceType = UIImagePickerControllerSourceType.camera
-//            
-//            
-//        } else {
-//            
-//            picker.sourceType = UIImagePickerControllerSourceType.photoLibrary
-//        }
-//        
-//        present(picker, animated: true, completion:nil)
     }
     
     
@@ -331,11 +348,9 @@ class MessagingViewController: JSQMessagesViewController {
     
     private func observeMessages() {
 
-        // 1.
         let messageQuery = mRef.queryLimited(toLast:25)
         
-        // 2. We can use the observe method to listen for new
-        // messages being written to the Firebase DB
+
         
         newMessageRefHandle = messageQuery.observe(.childAdded, with: { (snapshot) -> Void in
             // 3
@@ -347,6 +362,10 @@ class MessagingViewController: JSQMessagesViewController {
                 if(text == "-1-2-3-4-5"){
                     self.disconnected()
                     
+                }else if (text == "placeholder") {
+                    
+                    //do not display, this is just so we don't prematurely disconnect the users when one sends the app to the background before sending any messages
+                    
                 }
                 
                 else{
@@ -354,7 +373,6 @@ class MessagingViewController: JSQMessagesViewController {
                     JSQSystemSoundPlayer.jsq_playMessageReceivedSound()
                     self.addMessage(withId: id, name: name, text: text)
                     
-//                    self.collectionView.contentOffset = CGPoint(x:0, y:self.collectionView.contentSize.height - self.collectionView.bounds.size.height);
 
                     self.finishReceivingMessage()
                     
@@ -364,12 +382,12 @@ class MessagingViewController: JSQMessagesViewController {
                 
             }else if let id = messageData["senderId"] as String!,
                 let photoURL = messageData["photoURL"] as String! { // 1
-                // 2
+
                 if let mediaItem = JSQPhotoMediaItem(maskAsOutgoing: id == self.senderId) {
-                    // 3
+
                     JSQSystemSoundPlayer.jsq_playMessageReceivedSound()
                     self.addPhotoMessage(withId: id, key: snapshot.key, mediaItem: mediaItem)
-                    // 4
+
                     if photoURL.hasPrefix("gs://") {
                         self.fetchImageDataAtURL(photoURL, forMediaItem: mediaItem, clearsPhotoMessageMapOnSuccessForKey: nil)
                     }
@@ -388,7 +406,7 @@ class MessagingViewController: JSQMessagesViewController {
             let messageData = snapshot.value as! Dictionary<String, String> // 1
             
             if let photoURL = messageData["photoURL"] as String! { // 2
-                // The photo has been updated.
+
                 if let mediaItem = self.photoMessageMap[key] { // 3
                     self.fetchImageDataAtURL(photoURL, forMediaItem: mediaItem, clearsPhotoMessageMapOnSuccessForKey: key) // 4
                 }
@@ -418,34 +436,29 @@ class MessagingViewController: JSQMessagesViewController {
     }
     
     private func fetchImageDataAtURL(_ photoURL: String, forMediaItem mediaItem: JSQPhotoMediaItem, clearsPhotoMessageMapOnSuccessForKey key: String?) {
-        // 1
+
         let storageRef = FIRStorage.storage().reference(forURL: photoURL)
         
-        // 2
+
         storageRef.data(withMaxSize: INT64_MAX){ (data, error) in
             if let error = error {
                 print("Error downloading image data: \(error)")
                 return
             }
             
-            // 3
+
             storageRef.metadata(completion: { (metadata, metadataErr) in
                 if let error = metadataErr {
                     print("Error downloading metadata: \(error)")
                     return
                 }
                 
-                // 4
-//                if (metadata?.contentType == "image/gif") {
-////                    mediaItem.image = UIImage.gifWithData(data!)
-//                    mediaItem.image = UIImage.init(data: data!)
-//                }
+
                 else {
                     mediaItem.image = UIImage.init(data: data!)
                 }
                 self.collectionView.reloadData()
-                
-                // 5
+            
                 guard key != nil else {
                     return
                 }
@@ -464,11 +477,28 @@ class MessagingViewController: JSQMessagesViewController {
             switch swipeGesture.direction {
             case UISwipeGestureRecognizerDirection.right:
                 print("Swiped right")
+                
+                self.mRef.removeAllObservers()
+                
+                let itemRef = mRef.childByAutoId()
+                let messageItem = [
+                    "senderId": senderId!,
+                    "senderName": senderDisplayName!,
+                    "text": "-1-2-3-4-5",
+                    ]
+                
+                itemRef.setValue(messageItem)
+                
+                finishSendingMessage()
+                performSegue(withIdentifier: "toStartView", sender: nil)
+                
             case UISwipeGestureRecognizerDirection.down:
                 print("Swiped down")
 
             case UISwipeGestureRecognizerDirection.left:
                 print("Swiped left")
+                
+                
                 
                 self.mRef.removeAllObservers()
                 performSegue(withIdentifier: "toSearchView", sender: nil)
@@ -483,39 +513,33 @@ class MessagingViewController: JSQMessagesViewController {
         }
     }
 
-
-    // MARK: - Navigation
     
     
     func disconnected(){
         
         self.mRef.removeAllObservers()
-        let alertController = UIAlertController(title: "User Disconnected", message: "Find another chatter", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "User Disconnected", message: "Find another chatter?", preferredStyle: .alert)
         
-        let OKAction = UIAlertAction(title: "Search", style: .default) { action in
-            // ...
-            
-            //                        self.mRef.removeAllObservers()
+        let OKAction = UIAlertAction(title: "Go", style: .default) { action in
+
             self.resignFirstResponder()
             self.alreadyDisconnected = true
             self.performSegue(withIdentifier: "toSearchView", sender: nil)
             
         }
         
-        let CancelAction = UIAlertAction(title: "Back", style: .default) { action in
-            // ...
-            
-            //                        self.mRef.removeAllObservers()
+        let CancelAction = UIAlertAction(title: "Cancel", style: .default) { action in
+
             self.resignFirstResponder()
             self.performSegue(withIdentifier: "toStartView", sender: nil)
             
         }
-        alertController.addAction(OKAction)
         alertController.addAction(CancelAction)
+        alertController.addAction(OKAction)
+        
         
         
         self.present(alertController, animated: true) {
-            // ...
         }
         
     }
@@ -523,40 +547,44 @@ class MessagingViewController: JSQMessagesViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
+        //darken this view
+        let overlayView: UIView = UIView.init(frame: self.view.bounds)
+        overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
+        self.view.addSubview(overlayView)
+        
         if(segue.identifier == "toSearchView"){
             
+
             
-            //TODO: Delete messages thread and send a disconnect message to other user
             if (!alreadyDisconnected){
             
-                let itemRef = mRef.childByAutoId() // 1
-                let messageItem = [ // 2
+                let itemRef = mRef.childByAutoId()
+                let messageItem = [
                 "senderId": senderId!,
                 "senderName": senderDisplayName!,
                 "text": "-1-2-3-4-5",
                 ]
             
-                itemRef.setValue(messageItem) // 3
+                itemRef.setValue(messageItem)
                 
-            
-            
-//            JSQSystemSoundPlayer.jsq_playMessageSentSound() // 4
+
             
                 finishSendingMessage()
             }
             
-            storageRef.delete(completion: { (Void) in
-                print("Deleting Photos")
-            })
+//            storageRef.delete(completion: { (Void) in
+//                print("Deleting Photos")
+//            })
             mRef.removeValue()
-
             
         }
+        
         if(segue.identifier == "toStartView"){
+
             
-            storageRef.delete(completion: { (Void) in
-                print("Deleting Photos")
-            })
+//            storageRef.delete(completion: { (Void) in
+//                print("Deleting Photos")
+//            })
             mRef.removeValue()
             
             
@@ -574,17 +602,23 @@ class MessagingViewController: JSQMessagesViewController {
 // MARK: Image Picker Delegate
 extension MessagingViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    
+
     func imagePickerController(_ picker: UIImagePickerController,
                                didFinishPickingMediaWithInfo info: [String : Any]) {
         
         picker.dismiss(animated: true, completion:nil)
         
-        // 1
-        if let photoReferenceUrl = info[UIImagePickerControllerReferenceURL] as? URL {
-            // Handle picking a Photo from the Photo Library
-            // 2
         
+        let chosenImage: UIImage = (info[UIImagePickerControllerOriginalImage] as? UIImage)!
+            
+        var data = NSData()
+        data = UIImageJPEGRepresentation(chosenImage, 1.0)! as NSData
+            
+        
+        
+        //this doesn't catch the photo gallary as it should
+        if let photoReferenceUrl = info[UIImagePickerControllerReferenceURL] as? URL {
+  
             
             let assets = PHAsset.fetchAssets(withALAssetURLs: [photoReferenceUrl], options: nil)
             let asset = assets.firstObject
@@ -593,91 +627,82 @@ extension MessagingViewController: UIImagePickerControllerDelegate, UINavigation
 
                 let manager = PHImageManager.default()
                 
+                let options = PHImageRequestOptions()
+                options.deliveryMode = .fastFormat
+                options.isSynchronous = true
+                options.isNetworkAccessAllowed = true
+                
+                
                 manager.requestImage(for: asset!, targetSize: CGSize(width: 100.0, height: 100.0), contentMode: .aspectFit, options: nil, resultHandler: {(result, info)->Void in
-                    // Result is a UIImage
-                    // Either upload the UIImage directly or write it to a file
+
                     
-                    print(result!)
+                    
                     
                     let path = "\(FIRAuth.auth()?.currentUser?.uid)/\(Int(Date.timeIntervalSinceReferenceDate * 1000))/\(photoReferenceUrl.lastPathComponent)"
                     
+                    
+                    //oddly this returns nil if the image is from the photo gallary
+                    
                     if let imageFileURL = UIImageJPEGRepresentation(result!, 1.0){
-                        
-                        
+//                    let imageFileURL = UIImageJPEGRepresentation(result!, 1.0)
+                    
+//                        imageView.contentMode = UIViewContentModeScaleAspectFill;
+//                        imageView.frame = CGRectMake(0.0, 0.0, size.width, size.height);
                         self.storageRef.child(path).put(imageFileURL, metadata: nil) { (metadata, error) in
                             if let error = error {
                                 print("Error uploading photo: \(error.localizedDescription)")
                                 return
                             }
-                            // 7
                             self.setImageURL(self.storageRef.child((metadata?.path)!).description, forPhotoMessageWithKey: key)
                         }
                         
                     }else{
                         
-                        let image = UIImage(named: "noImage")
-                        let imageFileURL = UIImageJPEGRepresentation(image!, 1.0)
+//                            print(result!)
+//                            let imageData = UIImage(named: "noImage")
+                            let imageData = data
                         
-                        self.storageRef.child(path).put(imageFileURL!, metadata: nil) { (metadata, error) in
+                            self.storageRef.child(path).put(imageData as Data, metadata: nil) { (metadata, error) in
                             if let error = error {
                                 print("Error uploading photo: \(error.localizedDescription)")
                                 return
                             }
-                            // 7
                             self.setImageURL(self.storageRef.child((metadata?.path)!).description, forPhotoMessageWithKey: key)
+                            
                         }
+                
+                            
                     }
 
-//                    let data: NSData = NSData.withData(UIImagePNGRepresentation(result!)!)
-//                    let imageFileURL: UIImage = UImage.imageWithData(data)
-//                    UIImage *img=[UIImage imageWithData:data];
-
-                    
-                    
-                    
-                    // 6
                     
                 })
                 
-//                asset?.requestContentEditingInput(with: nil, completionHandler: { (contentEditingInput, info) in
-//                    let imageFileURL = contentEditingInput?.fullSizeImageURL
-//                    
-//                    
-//                    let path = "\(FIRAuth.auth()?.currentUser?.uid)/\(Int(Date.timeIntervalSinceReferenceDate * 1000))/\(photoReferenceUrl.lastPathComponent)"
-//                    
-//                    // 6
-//                    self.storageRef.child(path).putFile(imageFileURL!, metadata: nil) { (metadata, error) in
-//                        if let error = error {
-//                            print("Error uploading photo: \(error.localizedDescription)")
-//                            return
-//                        }
-//                        // 7
-//                        self.setImageURL(self.storageRef.child((metadata?.path)!).description, forPhotoMessageWithKey: key)
-//                    }
-//                })
+
             }
+        
         } else {
             
-            // Handle picking a Photo from the Camera - TODO
-            // 1
-            
+  
             let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-            // 2
+ 
             if let key = sendPhotoMessage() {
-                // 3
+ 
                 let imageData = UIImageJPEGRepresentation(image, 1.0)
-                // 4
+   
                 let imagePath = FIRAuth.auth()!.currentUser!.uid + "/\(Int(Date.timeIntervalSinceReferenceDate * 1000)).jpg"
-                // 5
+   
                 let metadata = FIRStorageMetadata()
                 metadata.contentType = "image/jpeg"
-                // 6
+
                 storageRef.child(imagePath).put(imageData!, metadata: metadata) { (metadata, error) in
+                    
                     if let error = error {
+                        
                         print("Error uploading photo: \(error)")
                         return
+                        
                     }
-                    // 7
+  
                     self.setImageURL(self.storageRef.child((metadata?.path)!).description, forPhotoMessageWithKey: key)
                 }
             }
@@ -685,6 +710,10 @@ extension MessagingViewController: UIImagePickerControllerDelegate, UINavigation
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        
         picker.dismiss(animated: true, completion:nil)
+        
     }
 }
+
+
