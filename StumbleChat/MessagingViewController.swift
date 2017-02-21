@@ -1,10 +1,18 @@
 //
 //  MessagingViewController.swift
-//  StumbleChat
+//  WoolyBear
 //
 //  Created by Justin Hershey on 2/13/17.
 //  Copyright © 2017 Fenapnu. All rights reserved.
 //
+//  ViewController that watches for changes to the messagingChannel in Firebase and displays messages while both users are connected
+//
+//  Segues -> toStartView -- swipe Right to disconnect and return to the StartViewController
+//         -> toSearchView -- swipe Left to disconnect and start searching for another person to chat to
+//
+//
+//
+
 
 import UIKit
 import JSQMessagesViewController
@@ -15,22 +23,25 @@ import Photos
 
 class MessagingViewController: JSQMessagesViewController {
 
-    var alert: UIAlertController? = nil
+    private var alert: UIAlertController? = nil
     var channelID: String!
     var connectedUsersId: String!
     
     private let imageURLNotSetKey = "NOTSET"
     private var photoMessageMap = [String: JSQPhotoMediaItem]()
     
-
+    var overlayView: UIView!
     var alreadyDisconnected: Bool = false
     
     var dAlert = UIAlertController()
 
+    
     lazy var storageRef: FIRStorageReference = FIRStorage.storage().reference(forURL: "gs://stumblechat.appspot.com")
     private lazy var ref: FIRDatabaseReference = FIRDatabase.database().reference()
     private lazy var mRef: FIRDatabaseReference = FIRDatabase.database().reference().child("MessagingChannel")
 
+    
+    
     private var newMessageRefHandle: FIRDatabaseHandle?
     private var updatedMessageRefHandle: FIRDatabaseHandle?
     
@@ -43,23 +54,32 @@ class MessagingViewController: JSQMessagesViewController {
     lazy var outgoingBubbleImageView: JSQMessagesBubbleImage = self.setupOutgoingBubble()
     lazy var incomingBubbleImageView: JSQMessagesBubbleImage = self.setupIncomingBubble()
     
+    //Connected Users displayName Label
     @IBOutlet weak var displayNameLbl: UILabel!
     
-    override func viewDidLayoutSubviews() {
-        
-        let statusHeight: CGFloat = UIApplication.shared.statusBarFrame.height
-        self.collectionView.frame = CGRect(x: 0, y: statusHeight + 20.0, width: self.view.frame.size.width, height: self.collectionView.frame.height - (statusHeight + 20.0))
-        
-    }
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-
+        
+        overlayView = UIView.init(frame: self.view.bounds)
+        self.view.addSubview(overlayView)
+        
         mRef = mRef.child(channelID)
         
+        self.inputToolbar.contentView.backgroundColor = UIColor.init(red: 0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
         
+        self.inputToolbar.contentView.rightBarButtonItem.backgroundColor = UIColor.init(red: 0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
+        
+        self.inputToolbar.contentView.textView.tintColor = UIColor.init(red: 0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
+        
+        
+        self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(.white, for: .normal)
+//        self.inputToolbar.contentView.leftBarButtonItem.setTitleColor(.white, for: .reserved)
+        
+        
+//        self.inputToolbar.contentView.rightBarButtonItem.tit
         
         self.displayNameLbl.text = "chatting with " + self.senderDisplayName + "..."
         self.displayNameLbl.textColor = UIColor.lightGray
@@ -75,17 +95,20 @@ class MessagingViewController: JSQMessagesViewController {
 
         self.collectionView.collectionViewLayout.springinessEnabled = false
         
-        //Add observer to the app resigning so we can kick the user back to the start screen and disconnect cleanly
+        //Add observer to the app terminatingso we can kick the connected user back to the start screen and disconnect cleanly.
         NotificationCenter.default.addObserver(self, selector: #selector(appWillTerminate), name: NSNotification.Name.UIApplicationWillTerminate, object: nil)
         
+        //App will resign active Observer so we can check to make sure there is an entry in the DB to reconnect properly when the app resumes
         NotificationCenter.default.addObserver(self, selector: #selector(appMovedToInactive), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
         
+        //Did become active Observer to Check to make sure the chat is still active
         NotificationCenter.default.addObserver(self, selector: #selector(appMovedToActive), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
 
         // No Avatars
         collectionView!.collectionViewLayout.incomingAvatarViewSize = CGSize.zero
         collectionView!.collectionViewLayout.outgoingAvatarViewSize = CGSize.zero
         
+        //Swipe Gesture recognizers
         let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
         swipeLeft.direction = UISwipeGestureRecognizerDirection.left
         self.view.addGestureRecognizer(swipeLeft)
@@ -94,7 +117,28 @@ class MessagingViewController: JSQMessagesViewController {
         swipeRight.direction = UISwipeGestureRecognizerDirection.right
         self.view.addGestureRecognizer(swipeRight)
         
+        
+        //begin messaging Channel Observer
         observeMessages()
+        
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        
+        self.overlayView.isHidden = true
+        
+//        self.navigationController?.isNavigationBarHidden = true
+    }
+    
+    
+    //resize the Collection View so it doesn't overlap the displayName label
+    override func viewDidLayoutSubviews() {
+        
+        let statusHeight: CGFloat = UIApplication.shared.statusBarFrame.height
+        self.collectionView.frame = CGRect(x: 0, y: statusHeight + 20.0, width: self.view.frame.size.width, height: self.collectionView.frame.height - (statusHeight + 20.0))
         
     }
 
@@ -103,7 +147,9 @@ class MessagingViewController: JSQMessagesViewController {
     func appWillTerminate(_ animated: Bool) {
         
         print("App Moving to Inactive")
+        
         self.mRef.removeAllObservers()
+
         if (!alreadyDisconnected){
             
             let itemRef = mRef.childByAutoId()
@@ -118,6 +164,7 @@ class MessagingViewController: JSQMessagesViewController {
             
         }
         
+        //  deleting photos manually for now is easier since firebase has no recursive delete in storage
         //            storageRef.delete(completion: { (Void) in
         //                print("Deleting Photos")
         //            })
@@ -129,19 +176,20 @@ class MessagingViewController: JSQMessagesViewController {
         
     }
     
+    //If no messages yet, create a placeholder so user can reconnect when the app becomes active again
     func appMovedToInactive(_ animated: Bool) {
         
-        print("App Moving to Inactive")
+        print("App Moving to Inactive, chat still connected")
 
         
-        //if no messages send a placeholder message to backend or when becoming active again, chat will disconnect because it may not find any message data
+        //if no messages send a placeholder message to backend or when becoming active again chat will disconnect because it may not find any message data
         if (messages.count == 0){
             
             let itemRef = mRef.childByAutoId()
             let messageItem = [
                 "senderId": senderId!,
                 "senderName": senderDisplayName!,
-                "text": "placeholder",
+                "text": "1-2-3-4-5-",
                 ]
             
             itemRef.setValue(messageItem)
@@ -150,14 +198,12 @@ class MessagingViewController: JSQMessagesViewController {
             
         }
         
-
-        
-        
         
     }
     
     
     
+    //Check to see if the session is still active. If not display disconnected alert
     
     func appMovedToActive(_ animated: Bool) {
         
@@ -197,11 +243,13 @@ class MessagingViewController: JSQMessagesViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    
+    
     //UI Setup
     
     private func setupOutgoingBubble() -> JSQMessagesBubbleImage {
         let bubbleImageFactory = JSQMessagesBubbleImageFactory()
-        return bubbleImageFactory!.outgoingMessagesBubbleImage(with: UIColor.jsq_messageBubbleBlue())
+        return bubbleImageFactory!.outgoingMessagesBubbleImage(with: UIColor.init(red: 0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0))
     }
     
     private func setupIncomingBubble() -> JSQMessagesBubbleImage {
@@ -212,7 +260,7 @@ class MessagingViewController: JSQMessagesViewController {
 
     
     
-    //JSQMessaging Delegate Methods
+    //JSQMessaging/CollectionView Delegate Methods
     
     override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageDataForItemAt indexPath: IndexPath!) -> JSQMessageData! {
         return messages[indexPath.item]
@@ -257,6 +305,7 @@ class MessagingViewController: JSQMessagesViewController {
     }
     
     override func didPressSend(_ button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: Date!) {
+        
         let itemRef = mRef.childByAutoId()
         let messageItem = [
             "senderId": senderId!,
@@ -272,6 +321,13 @@ class MessagingViewController: JSQMessagesViewController {
         
         
     }
+    
+    
+    /*
+     * Current Functionality -> Attatch Photo, Take/Send Photo. No video or location
+     *
+     *
+     */
     
     override func didPressAccessoryButton(_ sender: UIButton!) {
         print("pressed Accessory Button")
@@ -315,12 +371,13 @@ class MessagingViewController: JSQMessagesViewController {
     
     
  
-    
+    //sets the image URL as the message in the mesageingChannel
     func setImageURL(_ url: String, forPhotoMessageWithKey key: String) {
         let itemRef = mRef.child(key)
         itemRef.updateChildValues(["photoURL": url])
     }
     
+    //sets the photoMessage in the MessagingChannel without the ImageURL as a placeholder
     func sendPhotoMessage() -> String? {
         let itemRef = mRef.childByAutoId()
         
@@ -338,36 +395,40 @@ class MessagingViewController: JSQMessagesViewController {
     }
     
     func addMedia(_ media:JSQMediaItem) {
+        
         let message = JSQMessage(senderId: self.senderId, displayName: self.senderDisplayName, media: media)
         self.messages.append(message!)
         
-        //Optional: play sent sound
+        JSQSystemSoundPlayer.jsq_playMessageSentSound()
         
         self.finishSendingMessage(animated: true)
     }
     
+    
+    //Messaging Channel Observer
     private func observeMessages() {
 
         let messageQuery = mRef.queryLimited(toLast:25)
         
-
-        
         newMessageRefHandle = messageQuery.observe(.childAdded, with: { (snapshot) -> Void in
             // 3
-            let messageData = snapshot.value as! Dictionary<String, String>
+            let messageData = snapshot.value as! Dictionary<String, AnyObject>
             
-            if let id = messageData["senderId"] as String!, let name = messageData["senderName"] as String!, let text = messageData["text"] as String!, text.characters.count > 0 {
-                // 4
+            if let id = messageData["senderId"] as! String!, let name = messageData["senderName"] as! String!, let text = messageData["text"] as! String!, text.characters.count > 0 {
                 
+                //disconnected Message
                 if(text == "-1-2-3-4-5"){
+                    
                     self.disconnected()
                     
-                }else if (text == "placeholder") {
+                //placeholder message
+                }else if (text == "1-2-3-4-5-") {
                     
                     //do not display, this is just so we don't prematurely disconnect the users when one sends the app to the background before sending any messages
                     
                 }
                 
+                //Normal message
                 else{
 
                     JSQSystemSoundPlayer.jsq_playMessageReceivedSound()
@@ -380,8 +441,8 @@ class MessagingViewController: JSQMessagesViewController {
                     
                 }
                 
-            }else if let id = messageData["senderId"] as String!,
-                let photoURL = messageData["photoURL"] as String! { // 1
+            }else if let id = messageData["senderId"] as! String!,
+                let photoURL = messageData["photoURL"] as! String! { // 1
 
                 if let mediaItem = JSQPhotoMediaItem(maskAsOutgoing: id == self.senderId) {
 
@@ -452,7 +513,6 @@ class MessagingViewController: JSQMessagesViewController {
                     print("Error downloading metadata: \(error)")
                     return
                 }
-                
 
                 else {
                     mediaItem.image = UIImage.init(data: data!)
@@ -469,6 +529,39 @@ class MessagingViewController: JSQMessagesViewController {
     
     
     // MARK: Navigation
+    func showSearchView(){
+    
+        self.resignFirstResponder()
+//        self.removeRefObserver()
+
+        let searchVC = self.storyboard?.instantiateViewController(withIdentifier: "searchView") as! SearchViewController
+
+        darkenView()
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let navi = appDelegate.navigationController
+        
+        navi?.pushViewController(searchVC, animated: true)
+        self.removeFromParentViewController()
+        
+    }
+    
+    
+    
+    
+    func showStartView(){
+        
+        self.resignFirstResponder()
+
+        darkenView()
+
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let navi = appDelegate.navigationController
+        
+        _ = navi?.popToRootViewController(animated: true)
+        
+
+    }
     
     //Swipe Gesture Method
     
@@ -478,8 +571,10 @@ class MessagingViewController: JSQMessagesViewController {
             case UISwipeGestureRecognizerDirection.right:
                 print("Swiped right")
                 
+                
                 self.mRef.removeAllObservers()
                 
+                //send disconnnect string as message
                 let itemRef = mRef.childByAutoId()
                 let messageItem = [
                     "senderId": senderId!,
@@ -490,20 +585,35 @@ class MessagingViewController: JSQMessagesViewController {
                 itemRef.setValue(messageItem)
                 
                 finishSendingMessage()
-                performSegue(withIdentifier: "toStartView", sender: nil)
                 
+                self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
+
             case UISwipeGestureRecognizerDirection.down:
                 print("Swiped down")
 
             case UISwipeGestureRecognizerDirection.left:
                 print("Swiped left")
-                
-                
-                
+
                 self.mRef.removeAllObservers()
-                performSegue(withIdentifier: "toSearchView", sender: nil)
                 
-//                
+                if (!alreadyDisconnected){
+                    
+                    //send disconnnect string as message
+                    let itemRef = mRef.childByAutoId()
+                    let messageItem = [
+                        "senderId": senderId!,
+                        "senderName": senderDisplayName!,
+                        "text": "-1-2-3-4-5",
+                        ]
+                    
+                    itemRef.setValue(messageItem)
+                    finishSendingMessage()
+                    
+                }
+                
+                self.perform(#selector(self.showSearchView), with: nil, afterDelay: 0.0)
+                
+
             case UISwipeGestureRecognizerDirection.up:
                 print("Swiped up")
                 
@@ -514,24 +624,31 @@ class MessagingViewController: JSQMessagesViewController {
     }
 
     
-    
+    //Handle the disconnected message
     func disconnected(){
         
         self.mRef.removeAllObservers()
-        let alertController = UIAlertController(title: "User Disconnected", message: "Find another chatter?", preferredStyle: .alert)
+//        self.deinit()
+        let alertController = UIAlertController(title: "User Disconnected", message: "Find another?", preferredStyle: .alert)
         
         let OKAction = UIAlertAction(title: "Go", style: .default) { action in
 
             self.resignFirstResponder()
             self.alreadyDisconnected = true
-            self.performSegue(withIdentifier: "toSearchView", sender: nil)
+            self.mRef.removeAllObservers()
+            self.mRef.removeValue()
+            self.perform(#selector(self.showSearchView), with: nil, afterDelay: 0.0)
             
         }
         
         let CancelAction = UIAlertAction(title: "Cancel", style: .default) { action in
 
-            self.resignFirstResponder()
-            self.performSegue(withIdentifier: "toStartView", sender: nil)
+            self.mRef.removeAllObservers()
+            self.mRef.removeValue()
+            
+            
+            
+             self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
             
         }
         alertController.addAction(CancelAction)
@@ -543,58 +660,15 @@ class MessagingViewController: JSQMessagesViewController {
         }
         
     }
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    
+    //set overlayView visible with black alpha background
+    func darkenView(){
         
-        //darken this view
-        let overlayView: UIView = UIView.init(frame: self.view.bounds)
-        overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
-        self.view.addSubview(overlayView)
+        self.overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
         
-        if(segue.identifier == "toSearchView"){
-            
-
-            
-            if (!alreadyDisconnected){
-            
-                let itemRef = mRef.childByAutoId()
-                let messageItem = [
-                "senderId": senderId!,
-                "senderName": senderDisplayName!,
-                "text": "-1-2-3-4-5",
-                ]
-            
-                itemRef.setValue(messageItem)
-                
-
-            
-                finishSendingMessage()
-            }
-            
-//            storageRef.delete(completion: { (Void) in
-//                print("Deleting Photos")
-//            })
-            mRef.removeValue()
-            
-        }
-        
-        if(segue.identifier == "toStartView"){
-
-            
-//            storageRef.delete(completion: { (Void) in
-//                print("Deleting Photos")
-//            })
-            mRef.removeValue()
-            
-            
-        }
-        
+        self.overlayView.isHidden = false
         
     }
-
-
-
 
 }
 
@@ -612,11 +686,13 @@ extension MessagingViewController: UIImagePickerControllerDelegate, UINavigation
         let chosenImage: UIImage = (info[UIImagePickerControllerOriginalImage] as? UIImage)!
             
         var data = NSData()
+        
+        //set data in case user is choosing photo from gallary
         data = UIImageJPEGRepresentation(chosenImage, 1.0)! as NSData
             
         
         
-        //this doesn't catch the photo gallary as it should
+        //this doesn't catch the photo gallary properly -> photo returns nil when representing asset result as JPEG or PNG data
         if let photoReferenceUrl = info[UIImagePickerControllerReferenceURL] as? URL {
   
             
@@ -644,10 +720,7 @@ extension MessagingViewController: UIImagePickerControllerDelegate, UINavigation
                     //oddly this returns nil if the image is from the photo gallary
                     
                     if let imageFileURL = UIImageJPEGRepresentation(result!, 1.0){
-//                    let imageFileURL = UIImageJPEGRepresentation(result!, 1.0)
-                    
-//                        imageView.contentMode = UIViewContentModeScaleAspectFill;
-//                        imageView.frame = CGRectMake(0.0, 0.0, size.width, size.height);
+
                         self.storageRef.child(path).put(imageFileURL, metadata: nil) { (metadata, error) in
                             if let error = error {
                                 print("Error uploading photo: \(error.localizedDescription)")
@@ -658,8 +731,7 @@ extension MessagingViewController: UIImagePickerControllerDelegate, UINavigation
                         
                     }else{
                         
-//                            print(result!)
-//                            let imageData = UIImage(named: "noImage")
+
                             let imageData = data
                         
                             self.storageRef.child(path).put(imageData as Data, metadata: nil) { (metadata, error) in

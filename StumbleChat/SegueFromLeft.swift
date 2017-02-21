@@ -1,9 +1,11 @@
 //
 //  SegueFromLeft.swift
-//  StumbleChat
+//  WoolyBear
 //
 //  Created by Justin Hershey on 2/15/17.
 //  Copyright © 2017 Fenapnu. All rights reserved.
+
+//  Custom Segue for bringing a viewcontroller into view from the left with bouncing
 //
 
 import Foundation
@@ -29,6 +31,7 @@ class SegueFromLeft: UIStoryboardSegue {
         },
                        completion: { finished in
                         src.present(dst, animated: false, completion: nil)
+//                        src.dismiss(animated: false, completion: nil)
         }
         )
     }

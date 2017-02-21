@@ -58,6 +58,7 @@ class AboutViewController: UIViewController{
         let overlayView: UIView = UIView.init(frame: self.view.bounds)
         overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
         self.view.addSubview(overlayView)
+        self.dismiss(animated: false, completion: nil)
     }
     
 }

@@ -87,7 +87,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Woolybear" translatesAutoresizingMaskIntoConstraints="NO" id="BIX-mt-RUv">
-                                <rect key="frame" x="88" y="50" width="200.5" height="200"/>
+                                <rect key="frame" x="88" y="94" width="200.5" height="200"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="BIX-mt-RUv" secondAttribute="height" multiplier="1:1" id="aKW-J7-gr6"/>
                                 </constraints>
@@ -109,6 +109,7 @@
                             <constraint firstItem="fL5-4T-s8j" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="mhv-mU-1og"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="X2H-Cw-38u"/>
                     <connections>
                         <outlet property="bearImage" destination="BIX-mt-RUv" id="T7N-o7-KyN"/>
                         <outlet property="displayLbl" destination="V2z-vh-aXL" id="DXU-x6-QX0"/>
@@ -119,7 +120,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="277.60000000000002" y="122.78860569715144"/>
+            <point key="canvasLocation" x="1216.8" y="122.78860569715144"/>
         </scene>
         <!--Search View Controller-->
         <scene sceneID="7Un-jF-d7p">
@@ -188,7 +189,7 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connecting to User..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mRU-uP-eTv">
                                 <rect key="frame" x="0.0" y="464" width="375" height="21.5"/>
                                 <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="19"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="textColor" red="0.20784313730000001" green="0.83921568629999999" blue="0.51764705879999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -211,17 +212,17 @@
                         <outlet property="topLeftIndicator" destination="oyx-Ds-BPb" id="Brv-Is-d0E"/>
                         <outlet property="topRightIndicator" destination="ueY-vr-wXH" id="ygy-gE-ve7"/>
                         <segue destination="VfU-hC-DoX" kind="custom" identifier="toMessagingView" customClass="SegueFromLeft" customModule="StumbleChat" customModuleProvider="target" id="lvX-HY-20b"/>
-                        <segue destination="BYZ-38-t0r" kind="custom" identifier="toStartView" customClass="SegueFromLeft" customModule="StumbleChat" customModuleProvider="target" id="Nac-cy-fPn"/>
+                        <segue destination="OYK-P8-cTY" kind="custom" identifier="toStartView" customClass="SegueFromLeft" customModule="StumbleChat" customModuleProvider="target" id="Nac-cy-fPn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qm7-d8-GdS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1409" y="-629"/>
+            <point key="canvasLocation" x="1408.8" y="-629.2353823088456"/>
         </scene>
         <!--Message View-->
         <scene sceneID="Ey7-Mg-alu">
             <objects>
-                <viewController title="Message View" id="VfU-hC-DoX" customClass="MessagingViewController" customModule="StumbleChat" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="messagingView" title="Message View" id="VfU-hC-DoX" customClass="MessagingViewController" customModule="StumbleChat" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="yY9-SI-Chf"/>
                         <viewControllerLayoutGuide type="bottom" id="pDa-Rp-Jra"/>
@@ -244,12 +245,12 @@
                     <connections>
                         <outlet property="displayNameLbl" destination="vr7-eQ-l06" id="Dtp-ht-q9V"/>
                         <segue destination="kA2-iE-cyB" kind="custom" identifier="toSearchView" customClass="SegueFromRight" customModule="StumbleChat" customModuleProvider="target" id="vec-Bs-WMw"/>
-                        <segue destination="BYZ-38-t0r" kind="custom" identifier="toStartView" customClass="SegueFromLeft" customModule="StumbleChat" customModuleProvider="target" id="DY7-dq-i0N"/>
+                        <segue destination="OYK-P8-cTY" kind="custom" identifier="toStartView" customClass="SegueFromLeft" customModule="StumbleChat" customModuleProvider="target" id="DY7-dq-i0N"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="l9W-ju-mPD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1409" y="123"/>
+            <point key="canvasLocation" x="2348" y="122.78860569715144"/>
         </scene>
         <!--AboutViewController-->
         <scene sceneID="ald-zM-Fgs">
@@ -286,19 +287,37 @@
                         </constraints>
                     </view>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="custom" identifier="toStartView" customClass="SegueFromRight" customModule="StumbleChat" customModuleProvider="target" id="Tge-2Y-Gvn"/>
+                        <segue destination="OYK-P8-cTY" kind="custom" identifier="toStartView" customClass="SegueFromRight" customModule="StumbleChat" customModuleProvider="target" id="Tge-2Y-Gvn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J9X-sk-3N0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-740" y="122.78860569715144"/>
+            <point key="canvasLocation" x="-1538" y="123"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="pge-DK-j2w">
+            <objects>
+                <navigationController storyboardIdentifier="navController" automaticallyAdjustsScrollViewInsets="NO" id="OYK-P8-cTY" customClass="NavigationController" customModule="StumbleChat" customModuleProvider="target" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="UCx-Ba-G6s">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="odX-fC-HuJ"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oiv-dX-e6o" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="277.60000000000002" y="122.78860569715144"/>
         </scene>
     </scenes>
     <resources>
         <image name="Woolybear" width="3000" height="3000"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Tge-2Y-Gvn"/>
-        <segue reference="UG6-fO-Oly"/>
+        <segue reference="vec-Bs-WMw"/>
+        <segue reference="DY7-dq-i0N"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -13,6 +13,7 @@
 		5E1927171E52095A00AFBE49 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E1927151E52095A00AFBE49 /* LaunchScreen.storyboard */; };
 		5E19271F1E52402D00AFBE49 /* MessagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E19271E1E52402D00AFBE49 /* MessagingViewController.swift */; };
 		5E1927241E5258B900AFBE49 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5E1927231E5258B900AFBE49 /* GoogleService-Info.plist */; };
+		5E4338DD1E5BA93E00544BE1 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4338DC1E5BA93E00544BE1 /* NavigationController.swift */; };
 		5E4B20561E56175200D2EC4C /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4B20551E56175200D2EC4C /* AboutViewController.swift */; };
 		5EA68FAE1E53751500E9306D /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA68FAD1E53751500E9306D /* SearchViewController.swift */; };
 		5EA68FB01E53BCA400E9306D /* SegueFromRight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA68FAF1E53BCA400E9306D /* SegueFromRight.swift */; };
@@ -32,6 +33,7 @@
 		5E19271E1E52402D00AFBE49 /* MessagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessagingViewController.swift; sourceTree = "<group>"; };
 		5E1927201E5240FF00AFBE49 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BridgingHeader.h; path = StumbleChat/BridgingHeader.h; sourceTree = "<group>"; };
 		5E1927231E5258B900AFBE49 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		5E4338DC1E5BA93E00544BE1 /* NavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		5E4B20551E56175200D2EC4C /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		5EA68FAD1E53751500E9306D /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		5EA68FAF1E53BCA400E9306D /* SegueFromRight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegueFromRight.swift; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 				5EA68FAF1E53BCA400E9306D /* SegueFromRight.swift */,
 				5EA68FB21E5522B500E9306D /* SegueFromLeft.swift */,
 				5E4B20551E56175200D2EC4C /* AboutViewController.swift */,
+				5E4338DC1E5BA93E00544BE1 /* NavigationController.swift */,
 			);
 			path = StumbleChat;
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EA68FB31E5522B500E9306D /* SegueFromLeft.swift in Sources */,
+				5E4338DD1E5BA93E00544BE1 /* NavigationController.swift in Sources */,
 				5E19270F1E52095A00AFBE49 /* StartViewController.swift in Sources */,
 				5E4B20561E56175200D2EC4C /* AboutViewController.swift in Sources */,
 				5E19270D1E52095A00AFBE49 /* AppDelegate.swift in Sources */,
@@ -293,6 +297,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -343,7 +348,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Justin Hershey (YKN8DC38G3)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -370,6 +376,8 @@
 			baseConfigurationReference = 6EABB3793D039A982E48A120 /* Pods-StumbleChat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = YKN8DC38G3;
 				INFOPLIST_FILE = StumbleChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -384,6 +392,8 @@
 			baseConfigurationReference = 4697CF6658A231386459F112 /* Pods-StumbleChat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = YKN8DC38G3;
 				INFOPLIST_FILE = StumbleChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

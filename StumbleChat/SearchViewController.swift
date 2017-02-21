@@ -1,10 +1,16 @@
 
 //
 //  SearchViewController.swift
-//  StumbleChat
+//  WoolyBear
 //
 //  Created by Justin Hershey on 2/14/17.
 //  Copyright © 2017 Fenapnu. All rights reserved.
+//
+//  ViewController that displays a searching animation. Provides a medium to connect to another user
+
+//  Segues -> toMessagingView -> On connection, shows MessagingViewController with a unique messaging channel with the other user
+//         -> toStartView -> bySwipingRight - cancels search and returns to startView
+//
 //
 
 import UIKit
@@ -14,100 +20,131 @@ import SystemConfiguration
 class SearchViewController: UIViewController {
     
     
-    
-//    let mToken = FIRInstanceID.instanceID().token()
+    //Firebase Data
     var ref: FIRDatabaseReference!
     var userID: String = (FIRAuth.auth()?.currentUser?.uid)!
 
-    
+    var overlayView: UIView!
     var boldHighlight: Int = 2;
     
+    //Timer for searching animation
     var SwiftTimer = Timer()
     
-    var pool: String!
+    
+    // Once connected to another user, will contain the MessagingChannel ID between the two users
     var channelID: String!
     
+    //initially set to -1 so we can know when both pools have returned (will return with int > 0)
     var passiveUsers: Int = -1
     var aggressiveUsers: Int = -1
     
     var senderName: String = "Test User"
     var senderID: String = "TestID"
-//    var senderToken: String = "empty"
     
-    var aggressivePool: String = "AggressivePool"
-    var passivePool: String = "PassivePool"
+    //Pool Strings - Constant
+    let aggressivePool: String = "AggressivePool"
+    let passivePool: String = "PassivePool"
     
+    //Current Users pool, will be either "AggressivePool" or "PassivePool"
     var myCurrentPool: String!
     
-//    var matchedToUser: String!
     
+    //Views used for the searching animation
     @IBOutlet weak var topLeftIndicator: UIView!
     @IBOutlet weak var topRightIndicator: UIView!
-
     @IBOutlet weak var bottomLeftIndicator: UIView!
     @IBOutlet weak var bottomRightIndicator: UIView!
     
-    
+    //Label that displays once a connection has begun to establish
     @IBOutlet weak var connectingLbl: UILabel!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        ref = FIRDatabase.database().reference()
+        
+        
+        overlayView = UIView.init(frame: self.view.bounds)
+        
+        self.view.addSubview(overlayView)
+        
+        
         self.connectingLbl.isHidden = true
         self.topLeftIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
         self.bottomRightIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 0.7)
+
         
         
-        self.startIndicator()
         
         NotificationCenter.default.addObserver(self, selector: #selector(appMovedToInactive), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(appWillTerminate), name: NSNotification.Name.UIApplicationWillTerminate, object: nil)
         
-        
+        //Add swipe Observer
         let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
         swipeRight.direction = UISwipeGestureRecognizerDirection.right
         self.view.addGestureRecognizer(swipeRight)
         
         
+
+
+    }
+    
+//    override func viewWillDisappear(_ animated: Bool) {
+//        super.viewWillDisappear(animated)
+//        
+////        self.dismiss(animated: false, completion: nil)
+//        self.removeFromParentViewController()
+//    }
+    
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
+        ref = FIRDatabase.database().reference()
+        
+        self.overlayView.isHidden = true
+        //start searching animation
+        self.startIndicator()
+        
+        //If network connection is active, call setPool() to determine the pool to add to
         if (self.connectedToNetwork()){
             setPool()
             
         }else{
-        
+            
             let alertController = UIAlertController(title: "Warning", message: "No Internet Connection", preferredStyle: .alert)
-        
+            
             let defaultAction = UIAlertAction(title: "OK", style: .default){ action in
                 
-
-                self.performSegue(withIdentifier: "toStartView", sender: nil)
+                
+                self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
+                
+//                self.performSegue(withIdentifier: "toStartView", sender: nil)
                 
             }
             alertController.addAction(defaultAction)
-        
+            
             present(alertController, animated: true, completion: nil)
-        
+            
         }
         
-
-        // Do any additional setup after loading the view.
+//        self.navigationController?.isNavigationBarHidden = true
+        
     }
     
     
     
-    //send the disconnect signal sequence and kick user back to start screen
+    //Deletes User's Pool data and kicks user back to start screen
     func appMovedToInactive(_ animated: Bool) {
         
         print("App Resigning")
-        let refWatch = ref.child(myCurrentPool).child(self.userID)
-        refWatch.removeAllObservers()
-        refWatch.removeValue()
-        performSegue(withIdentifier: "toStartView", sender: nil)
+//        performSegue(withIdentifier: "toStartView", sender: nil)
+        self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
         
     }
     
+    //Performs DB cleanup on app Termination, removes user's Pool data
     func appWillTerminate(_ animated: Bool) {
         
         print("App Terminate")
@@ -118,14 +155,15 @@ class SearchViewController: UIViewController {
         
     }
 
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+        
+        
+        
     }
     
-
-    
-    // MARK: - Navigation
 
     
     
@@ -214,20 +252,24 @@ class SearchViewController: UIViewController {
     
     
     //remove from matched pool upon searching start -- add check to see if you exist in matched pool
-    func removeFromMatchedPool(){
-        
-            ref.child("MatchedUsers").child(userID).removeValue()
-        
+//    func removeFromMatchedPool(){
+//        
+//            ref.child("MatchedUsers").child(userID).removeValue()
+//        
+//    
+//    }
     
-    }
-    
-    
+    /*
+    * searchForMatch(String) -> takes the current user's pool and matches them to a user from the opposite pool
+    *
+    *
+    */
     
     func searchForMatch(pool: String){
         
         senderName = "Test User"
         senderID = "TestID"
-//        senderToken = "empty"
+
         
         if(pool == aggressivePool){
             
@@ -253,7 +295,6 @@ class SearchViewController: UIViewController {
                             self.connectingLbl.isHidden = false
                             self.senderID = item.key
                             self.senderName = retrievedUser["name"] as! String
-//                            self.senderToken = retrievedUser["token"] as! String
                             
                             self.channelID = self.userID + self.senderID
                             
@@ -262,7 +303,6 @@ class SearchViewController: UIViewController {
                             
                             let passiveData = ["matchedToUserName": myUsername,
                                                "matchedToUserID": self.userID,
-//                                               "matchedToken": self.mToken,
                                                 "channelID": self.channelID,
                                                "name": self.senderName,
                                                "pool": self.passivePool]
@@ -271,7 +311,6 @@ class SearchViewController: UIViewController {
                             
                             self.ref.child(self.aggressivePool).child(self.userID).removeValue()
 
-                            
                             
                             break
                         }
@@ -286,8 +325,6 @@ class SearchViewController: UIViewController {
             }) { (error) in
                 print(error.localizedDescription)
             }
-            
-            
             
             
         }else if(pool == passivePool){
@@ -324,23 +361,72 @@ class SearchViewController: UIViewController {
                 }
                 
             })
-
-            
             
         }
         
+    }
+    
+    
+    func showMessagingView(){
+        
+        
+        
+        let messagingVC = self.storyboard?.instantiateViewController(withIdentifier: "messagingView") as! MessagingViewController
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let navi = appDelegate.navigationController
+        
+        messagingVC.senderId = self.userID
+        messagingVC.senderDisplayName = self.senderName
+        messagingVC.connectedUsersId = self.senderID
+        messagingVC.channelID = self.channelID
+        
+        
+        darkenView()
+        stopIndicator()
+        print("pushing search onto stack")
+        
+//        let transition = CATransition()
+//        transition.duration = 0.3
+//        transition.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+//        transition.type = kCATransitionFade
+//        
+//        //            transition.
+//        navi?.view.layer.add(transition, forKey: nil)
+        
+        navi?.pushViewController(messagingVC, animated: true)
+        self.removeFromParentViewController()
         
     }
     
     
     
     
-    
-    
-    func showMessagingView(){
+    func showStartView(){
      
         
-        performSegue(withIdentifier: "toMessagingView", sender: nil)
+//        performSegue(withIdentifier: "toMessagingView", sender: nil)
+        let cxnCheckRef = ref.child(myCurrentPool).child(self.userID)
+        cxnCheckRef.removeAllObservers()
+        
+        
+        ref.child(self.myCurrentPool).child(self.userID).removeValue()
+        
+        darkenView()
+        stopIndicator()
+        
+        
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let navi = appDelegate.navigationController
+        
+//        let transition = CATransition()
+//        transition.duration = 0.3
+//        transition.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+//        transition.type = kCATransitionFade
+//        
+//        //            transition.
+//        navi?.view.layer.add(transition, forKey: nil)
+        _ = navi?.popViewController(animated: true)
     }
     
     
@@ -357,7 +443,9 @@ class SearchViewController: UIViewController {
     
     
     
-    
+/*
+* Move squares for loading animation > Uses a timer
+*/
     func moveSquares(){
         
         if(self.boldHighlight == 1){
@@ -419,40 +507,25 @@ class SearchViewController: UIViewController {
         
         
     }
+    
+    
+    
+/*
+ * Swipe Direction Handler
+ * Right -> toStartView
+ * Left -> toSearchView
+ */
+    
     func respondToSwipeGesture(gesture: UIGestureRecognizer) {
         if let swipeGesture = gesture as? UISwipeGestureRecognizer {
             switch swipeGesture.direction {
                 
             case UISwipeGestureRecognizerDirection.right:
                 print("Swiped right")
-                let cxnCheckRef = ref.child(myCurrentPool).child(self.userID)
-                    
-                    
-                cxnCheckRef.removeAllObservers()
                 
-                performSegue(withIdentifier: "toStartView", sender: nil)
-//                cxnCheckRef.observeSingleEvent(of: .value, with: { (snapshot) in
-//                    
-//                    let uDict = snapshot.value as! [String : String] 
-//                    
-//                    let channel = uDict["channelID"]
-//                    
-//                    if (channel != "none"){
-//                        
-//                        
-//                        let itemRef = self.ref.child("MessagingChannel").child(channel!).childByAutoId() // 1
-//                        let messageItem = [
-//                            "senderId": self.userID,
-//                            "senderName": self.senderName,
-//                            "text": "-1-2-3-4-5",
-//                        ]
-//                        
-//                        itemRef.setValue(messageItem)
-//
-//                        
-//                    }
-//                    
-//                })
+                showStartView()
+                
+//                performSegue(withIdentifier: "toStartView", sender: nil)
                 
                 
                 
@@ -462,9 +535,7 @@ class SearchViewController: UIViewController {
             case UISwipeGestureRecognizerDirection.left:
                 print("Swiped left")
                 
-                
-                
-            //
+
             case UISwipeGestureRecognizerDirection.up:
                 print("Swiped up")
                 
@@ -483,15 +554,20 @@ class SearchViewController: UIViewController {
     }
     
     
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    func darkenView(){
         
         //darken this view
-        let overlayView: UIView = UIView.init(frame: self.view.bounds)
+        
         overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
-        self.view.addSubview(overlayView)
+        self.overlayView.isHidden = false
+
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+
+        
+        
         
         if(segue.identifier == "toMessagingView"){
             
@@ -508,19 +584,22 @@ class SearchViewController: UIViewController {
             mvc.senderDisplayName = self.senderName
             mvc.connectedUsersId = self.senderID
             mvc.channelID = self.channelID
+            stopIndicator()
             
             
         }
         if(segue.identifier == "toStartView"){
             
-            
+            stopIndicator()
             ref.child(self.myCurrentPool).child(self.userID).removeValue()
-            
-            
+//            self.dismiss(animated: false, completion: nil)
+//            self.navigationController?.popViewController(animated: false)
             
         }
         
     }
+    
+    
     
     //check for internet connection, returns true if there is a connection
     func connectedToNetwork() -> Bool {

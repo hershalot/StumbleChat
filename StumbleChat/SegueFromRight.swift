@@ -1,9 +1,12 @@
 //
-//  CustomPresentAnimationController.swift
-//  StumbleChat
+//  SegueFromRight.swift
+//  WoolyBear
 //
 //  Created by Justin Hershey on 2/14/17.
 //  Copyright © 2017 Fenapnu. All rights reserved.
+//
+//  Custom Segue for bringing a viewcontroller into view from the right with bouncing
+//
 //
 
 import Foundation
@@ -31,6 +34,7 @@ class SegueFromRight: UIStoryboardSegue {
             },
                                        completion: { finished in
                                         src.present(dst, animated: false, completion: nil)
+//                                        src.dismiss(animated: false, completion: nil)
             }
             )
         }

@@ -15,6 +15,7 @@ import SystemConfiguration
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+     var navigationController: NavigationController?
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -48,9 +49,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         }
 
-        
-
-        
         return true
     }
 
@@ -116,8 +114,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             viewController.uid = uid as NSString
             viewController.displayName = name!
             
-            self.window?.rootViewController = viewController
-                
+//            self.window?.rootViewController = viewController
+            
+            
+            self.navigationController = self.window?.rootViewController?.storyboard?.instantiateViewController(withIdentifier: "navController") as? UINavigationController as! NavigationController?
+            
+            self.window?.rootViewController = self.navigationController
+            self.navigationController?.isNavigationBarHidden = true
+            self.navigationController?.pushViewController(viewController, animated: false)
             
         }
     
