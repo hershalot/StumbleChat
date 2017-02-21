@@ -1,0 +1,90 @@
+﻿PRIVACY POLICY
+Last modified: November 28, 2016
+1. Introduction.
+1. WoolyBear (the “Company” or “We”) respects your privacy and is committed to protecting it through our compliance with this Privacy Policy (the “Privacy Policy”, as may be referred to in other Company documentation, including the Terms of Use). This policy describes the types of information we may collect from you or that you may provide when you (i) download, install, and register on our WoolyBear application (“WoolyBear”), and our practices for collecting, using, maintaining, protecting, and disclosing that information.
+2. This policy applies to information we collect:
+1. On this Website or through WoolyBear;
+2. In email, text, and other electronic messages between you and this Website or WoolyBear; or
+3. When you interact with our advertising and applications on third-party websites and services, if those applications or advertising include links to this Privacy Policy.
+1. It does not apply to information:
+1. Collected by us offline or through any other means, including on any other website operated by the Company or any third party; or 
+2. any third party, including through any application or content (including advertising) that may link to or be accessible from or on the Website or WoolyBear.
+1. Please read this policy carefully to understand our policies and practices regarding your information and how we will treat it. If you do not agree with our policies and practices, your remedy is to not access or use our Website or WoolyBear. This policy may change from time to time. Your continued use of this Website or WoolyBear after we make changes is deemed to be acceptance of those changes, so please check the policy periodically for updates. 
+1. Persons Under the Age of 18.
+Neither our Website nor WoolyBear is intended for persons under 18 years of age. No one under the age of 18 may provide any personal information to or on the Website or WoolyBear. We do not knowingly collect personal information from children under 18. If you are under 18, you may not use or register on the Website or WoolyBear, make any purchases through the Website or WoolyBear, use any of the interactive features of this Website or WoolyBear or provide any information about yourself to us, including your name, address, telephone number, email address, or any screen name or username you may use for the Member Login (as defined in the Terms of Use). If we learn we have collected or received personal information from a person under 18, we will delete that information. If you believe (a) we might have any information from or about a minor (under the age of 18, for these purposes), or (b) a user’s activities are inappropriate, please flag the offending user’s profile within WoolyBear, and email any additional supporting information you have to fenapnu@gmail.com.
+1. Information We Collect About You; How We Collect It.
+1. We collect several types of information from and about users of our Website and WoolyBear, including information:
+1. Firebase Anonymous authentication will not collect personal information except data such as:
+2.         the display name entered by the user within the app
+3. Photos you take or send from your device's photo storage to send to the appropriate connected user. These photos are deleted daily from Firebase.
+4. about your internet connection, the equipment you use to access our Website or WoolyBear, and usage details.
+
+
+1. We collect this information:
+1. Directly from you when you provide it to us;
+2. Automatically as you navigate through the site. Information collected automatically may include usage details, IP addresses, and information collected through cookies and other tracking technologies;
+3. Automatically from your mobile device (including, without limitation, any mobile devices or tablets) when you use our Services, including your IP address and type, operating system, MAC address, browser type and language, the operating system, access times while the application is actively running, and any referring website address.
+1. The information we collect on or through our Website or WoolyBear may include:
+1. Information that you provide by filling in forms on our Website or WoolyBear. This includes information provided at the time of registering for WoolyBear (as defined in the Terms of Use). We may also ask you for information when you report a problem with our Services;
+2. Records and copies of your correspondence (including email addresses), if you contact us; or
+3. Your responses to surveys that we might ask you to complete for research purposes.
+4. As you navigate through and interact with our Services through the Website or WoolyBear, we may use automatic data-collection technologies to collect certain information about your equipment, browsing actions, and patterns, including details of your visits to WoolyBear and use of our Services, including traffic data, location data, and other communication data and the resources that you access and use in conjunction with our Services.
+1. The information we collect automatically is statistical data, but we may maintain it or associate it with personal information we collect in other ways. This helps us to improve our Website and WoolyBear, and to deliver a better and more personalized service, including by enabling us to:
+1. Estimate our audience size and usage patterns;
+2. Speed up your searches and overall application infrastructure; or
+1. The technologies we use for this automatic data collection may include:
+1. Cookies (or browser cookies). A cookie is a small file placed on the hard drive of your computer or mobile device. You may refuse to accept browser cookies by activating the appropriate setting on your browser. However, if you select this setting you may be unable to access certain parts of our Website. Unless you have adjusted your browser setting so that it will refuse cookies, our system will issue cookies when you direct your browser to our Website. 
+
+
+1. Third-Party Use of Cookies; Other Tracking Technologies.
+1. Some content or applications, including advertisements, on the Website or WoolyBear, are served by third-parties, including advertisers, ad networks and servers, content providers, and application providers. These third parties may use cookies alone or in conjunction with web beacons or other tracking technologies to collect information about you when you use our Website or WoolyBear. The information they collect may be associated with your personal information or they may collect information, including personal information, about your online activities over time and across different websites and other online services. They may use this information to provide you with interest-based (behavioral) advertising or other targeted content. 
+2. We do not control these third parties’ tracking technologies or how they may be used. If you have any questions about an advertisement or other targeted content, you should contact the responsible provider directly.
+
+
+1. How We Use Your Information.
+1. We use a Firebase database structure to provide a user ID for every user that opens the app. This allows us to randomly match your anonymous login info with another user. Data is deleted once the session is disconnected
+2. The user can edit their display name, which saved in  Firebase until the session is disconnected
+
+
+1. Disclosure of Your Information.
+We do not maintain personal information and cannot disclose information we do not have. 
+
+
+1. Choices About How We Use and Disclose Your Information.
+We strive to provide you with choices regarding the personal information you provide to us. We have created mechanisms to provide you with the following control over your information: 
+1. Tracking Technologies and Advertising. You can set your browser to refuse all or some browser cookies, or to alert you when cookies are being sent. To learn how you can manage your Flash cookie settings, visit the Flash player settings page on Adobe’s website. If you disable or refuse cookies, please note that some parts of the Website may then be inaccessible or not function properly.
+2. Targeted Advertising. If you do not want us to use information that we collect or that you provide to us to deliver advertisements per our advertisers’ target-audience preferences, you can opt out by sending us an email stating your request to fenapnu@gmail.com. 
+3. Do Not Track Disclosure. Do Not Track (“DNT”) is a privacy preference that users can set in their web browsers. DNT is a way for users to inform websites and services that they do not want certain information about their webpage visits collected over time and across websites or online services. However, because of the uncertainty of DNT in the internet industry, and the various factors and players in conforming to compliance, we may not recognize nor respond to DNT signals.
+
+
+1. Accessing and Correcting Your Information.
+No personal information is maintained or persistent in Google’s Firebase storage. The only data maintained is the auto generated data for anonymous logins  proved by firebase, and the display name the user created. 
+
+
+1. Deactivation; Termination of Your Account.
+
+
+Persistent, unique identifying data is not maintained between WoolyBear Sessions. Each temporary account is terminated upon exiting the app.
+
+
+1. Your California Privacy Rights.
+California Civil Code Section 1798.83 permits users of our Website or WoolyBear that are California residents to request certain information regarding our disclosure of personal information to third parties for their direct marketing purposes. To make such a request, please send an email to fenapnu@gmail.com.
+
+
+1. Data Security.
+We have implemented measures designed to secure your personal information from accidental loss and from unauthorized access, use, alteration and disclosure. The safety and security of your information also depends on you. Where you have access to certain parts of our Website, or WoolyBear, you are responsible for keeping your password confidential. We ask you not to share your password with anyone. 
+Unfortunately, the transmission of information via the internet is not completely secure. Although we do our best to protect your personal information, we cannot guarantee the security of your personal information transmitted via our Website or WoolyBear. Any transmission of personal information is at your own risk. We are not responsible for circumvention of any privacy settings or security measures contained on the Website or WoolyBear.
+
+
+1. Communicating with You.
+
+
+1. If you provide a cell phone number to receive SMS messages from the Website or WoolyBear, you expressly consent to receiving SMS messages from us promoting our Services and products. Although there is no fee associated with this service, your carrier may charge you for each message you receive. You agree that we are not responsible for such charges. If you do not wish to continue to receive any messages via your mobile device, you may opt out at any time by texting “STOP” in response to a marketing SMS message.
+
+
+1.    Changes to Our Privacy Policy.
+
+
+It is our policy to post any changes we make to our Privacy Policy to this subdomain page. If we make material changes to how we treat our users’ personal information, we will notify you by email to the email address specified in your account or through a notice on the Website or WoolyBear. The date this Privacy Policy was last revised is identified at the top of the document. You are responsible for ensuring we have an up-to-date, active and deliverable email address for you, and for periodically visiting the Website or WoolyBear and this Privacy Policy to check for any changes.
+1. Contact Information.
+To ask questions or comment about this Privacy Policy and our privacy practices, contact us at fenapnu@gmail.com.
