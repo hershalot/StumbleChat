@@ -10,6 +10,8 @@ The passive pool uses a First in First out Queue.
 
 All chat data is removed from Firebase when the conversation is closed (Except photos since there isn't a recursive delete option for Firebase Storage yet - 2/20/2017). Photos are deleted Daily.
 
+Next TODO: Add bounce Animations on swipe navigations.
+
 Uses Pods:
 JSQMessagesController for the chat ViewController,
 EAIntroView for the IntroView on start,
