@@ -575,7 +575,7 @@ class SearchViewController: UIViewController {
         else if (gesture.state == .ended){
             
             //on fast pan, go back to startView
-            if (velocity.x > 1500){
+            if (velocity.x > 1300){
                 
                 print("animation velocity reached")
 //                let tempCenter = gesture.view!.center.x
