@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5E0BE95F1E5E701000C73615 /* WoolyBear.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5E0BE95E1E5E701000C73615 /* WoolyBear.txt */; };
 		5E19270D1E52095A00AFBE49 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E19270C1E52095A00AFBE49 /* AppDelegate.swift */; };
 		5E19270F1E52095A00AFBE49 /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E19270E1E52095A00AFBE49 /* StartViewController.swift */; };
 		5E1927121E52095A00AFBE49 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E1927101E52095A00AFBE49 /* Main.storyboard */; };
@@ -24,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		4697CF6658A231386459F112 /* Pods-StumbleChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StumbleChat.release.xcconfig"; path = "Pods/Target Support Files/Pods-StumbleChat/Pods-StumbleChat.release.xcconfig"; sourceTree = "<group>"; };
+		5E0BE95E1E5E701000C73615 /* WoolyBear.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WoolyBear.txt; sourceTree = "<group>"; };
 		5E1927091E52095A00AFBE49 /* StumbleChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StumbleChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E19270C1E52095A00AFBE49 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5E19270E1E52095A00AFBE49 /* StartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 		5E19270B1E52095A00AFBE49 /* StumbleChat */ = {
 			isa = PBXGroup;
 			children = (
+				5E0BE95E1E5E701000C73615 /* WoolyBear.txt */,
 				5EA68FB11E54EADE00E9306D /* StumbleChat.entitlements */,
 				5E19270C1E52095A00AFBE49 /* AppDelegate.swift */,
 				5E19270E1E52095A00AFBE49 /* StartViewController.swift */,
@@ -182,6 +185,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E1927171E52095A00AFBE49 /* LaunchScreen.storyboard in Resources */,
+				5E0BE95F1E5E701000C73615 /* WoolyBear.txt in Resources */,
 				5E1927241E5258B900AFBE49 /* GoogleService-Info.plist in Resources */,
 				5EBFA9F91E57D67400406B38 /* Assets.xcassets in Resources */,
 				5E1927121E52095A00AFBE49 /* Main.storyboard in Resources */,
