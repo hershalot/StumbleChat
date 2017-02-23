@@ -331,7 +331,7 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         //on swipe, goto searchView
         else if (gesture.state == .ended){
             
-            if (velocity.x < -2000){
+            if (velocity.x < -1500){
                 darkenView()
                 let tempCenter = gesture.view!.center.x
 //                self.view.transform = CGAffineTransform(translationX: self.view.frame.minX, y: 0)

@@ -613,7 +613,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         else if (gesture.state == .ended){
             
             //on fast pan right, go back to startView
-            if (velocity.x > 2000){
+            if (velocity.x > 1500){
                 
                 print("animation velocity reached")
 //                let tempCenter = gesture.view!.center.x
@@ -656,7 +656,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
             }
             
             //on fast left pan, goto searchView
-            else if (velocity.x < -2000){
+            else if (velocity.x < -1500){
                 
                 print("animation velocity reached")
 //                let tempCenter = gesture.view!.center.x
