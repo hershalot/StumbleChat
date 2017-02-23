@@ -17,7 +17,7 @@ import UIKit
 import Firebase
 import SystemConfiguration
 
-class SearchViewController: UIViewController {
+class SearchViewController: UIViewController, UINavigationControllerDelegate {
     
     
     //Firebase Data
@@ -109,7 +109,7 @@ class SearchViewController: UIViewController {
         self.mainSearchLbl.isHidden = false
         
         
-        
+        self.navigationController?.delegate = self
         //setting the pan right image as
         startImage = UIImageView.init(frame: CGRect(x: -self.view.frame.width, y: 0, width: self.view.frame.width, height:self.view.frame.height))
         
@@ -533,17 +533,11 @@ class SearchViewController: UIViewController {
         
         let velocity = gesture.velocity(in: self.view)
         let translation = gesture.translation(in: self.view)
-        
-        
-        print("frame coords minX: ")
-        print(self.view.frame.minX)
-        print("frame coords midX: ")
-        print(self.view.frame.midX)
-        print("New Center: ")
+
         print(gesture.view!.center.x + translation.x)
         
         
-        if (gesture.state == .began) {
+        if (gesture.state == .began || gesture.state == .changed) {
             
             self.view.addSubview(startImage)
             self.view.addSubview(rightView)
@@ -558,20 +552,7 @@ class SearchViewController: UIViewController {
             
             
         }
-        else if (gesture.state == .changed){
-            
 
-                gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
-                
-                
-                gesture.setTranslation(CGPoint.zero, in: self.view)
-
-            
-            
-            
-            
-        }
-            
         else if (gesture.state == .ended){
             
             //on fast pan, go back to startView
@@ -582,7 +563,7 @@ class SearchViewController: UIViewController {
                 darkenView()
                 UIView.animate(withDuration: 0.4,
                                delay: 0.0,
-                               usingSpringWithDamping: 0.7,
+                               usingSpringWithDamping: 0.6,
                                initialSpringVelocity: 0.4,
                                options: UIViewAnimationOptions.curveEaseInOut,
                                animations: {
@@ -608,9 +589,9 @@ class SearchViewController: UIViewController {
                 
                 let tempCenter = gesture.view!.center.x
                 
-                UIView.animate(withDuration: 0.9,
+                UIView.animate(withDuration: 0.5,
                                delay: 0.0,
-                               usingSpringWithDamping: 0.7,
+                               usingSpringWithDamping: 0.6,
                                initialSpringVelocity: 0.4,
                                options: UIViewAnimationOptions.curveEaseInOut,
                                animations: {
@@ -629,10 +610,10 @@ class SearchViewController: UIViewController {
             else if (self.view.frame.midX > self.view.frame.width){
 
                 darkenView()
-                UIView.animate(withDuration: 0.8,
+                UIView.animate(withDuration: 0.5,
                                delay: 0.0,
-                               usingSpringWithDamping: 0.7,
-                               initialSpringVelocity: 0.3,
+                               usingSpringWithDamping: 0.6,
+                               initialSpringVelocity: 0.4,
                                options: UIViewAnimationOptions.curveEaseInOut,
                                
                                animations: {

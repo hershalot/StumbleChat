@@ -574,15 +574,8 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         let translation = gesture.translation(in: self.view)
         
         
-        print("frame coords minX: ")
-        print(self.view.frame.minX)
-        print("frame coords midX: ")
-        print(self.view.frame.midX)
-        print("New Center: ")
-        print(gesture.view!.center.x + translation.x)
         
-        
-        if (gesture.state == .began) {
+        if (gesture.state == .began || gesture.state == .changed) {
             
             
             
@@ -596,19 +589,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
             
             
         }
-        else if (gesture.state == .changed){
-            
-            
-            gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
-            
-            
-            gesture.setTranslation(CGPoint.zero, in: self.view)
-            
-            
-            
-            
-            
-        }
+    
             
         else if (gesture.state == .ended){
             
@@ -620,8 +601,8 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
                 
                 UIView.animate(withDuration: 0.4,
                                delay: 0.0,
-                               usingSpringWithDamping: 0.7,
-                               initialSpringVelocity: 0.3,
+                               usingSpringWithDamping: 0.6,
+                               initialSpringVelocity: 0.4,
                                options: UIViewAnimationOptions.curveEaseInOut,
                                animations: {
                                 
@@ -663,8 +644,8 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
                 
                 UIView.animate(withDuration: 0.4,
                                delay: 0.0,
-                               usingSpringWithDamping: 0.7,
-                               initialSpringVelocity: 0.3,
+                               usingSpringWithDamping: 0.6,
+                               initialSpringVelocity: 0.4,
                                options: UIViewAnimationOptions.curveEaseInOut,
                                animations: {
 
@@ -706,8 +687,8 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
                 
                 UIView.animate(withDuration: 0.4,
                                delay: 0.0,
-                               usingSpringWithDamping: 0.7,
-                               initialSpringVelocity: 0.3,
+                               usingSpringWithDamping: 0.6,
+                               initialSpringVelocity: 0.4,
                                options: UIViewAnimationOptions.curveEaseInOut,
                                animations: {
                                 
@@ -725,10 +706,10 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
             else if (self.view.frame.minX <= 0 && self.view.frame.minX <= -self.view.frame.width/2){
                 let tempCenter = gesture.view!.center.x
                 
-                UIView.animate(withDuration: 0.4,
+                UIView.animate(withDuration: 0.5,
                                delay: 0.0,
-                               usingSpringWithDamping: 0.7,
-                               initialSpringVelocity: 0.3,
+                               usingSpringWithDamping: 0.6,
+                               initialSpringVelocity: 0.4,
                                options: UIViewAnimationOptions.curveEaseInOut,
                                
                                animations: {
@@ -768,10 +749,10 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
                 
                 let tempCenter = gesture.view!.center.x
                 
-                UIView.animate(withDuration: 0.4,
+                UIView.animate(withDuration: 0.5,
                                delay: 0.0,
-                               usingSpringWithDamping: 0.7,
-                               initialSpringVelocity: 0.3,
+                               usingSpringWithDamping: 0.6,
+                               initialSpringVelocity: 0.4,
                                options: UIViewAnimationOptions.curveEaseInOut,
                                animations: {
                                 
@@ -790,10 +771,10 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
             else if (self.view.frame.minX >= 0 && self.view.frame.minX > self.view.frame.width/2){
                 
 //                let tempCenter = gesture.view!.center.x
-                UIView.animate(withDuration: 0.4,
+                UIView.animate(withDuration: 0.5,
                                delay: 0.0,
-                               usingSpringWithDamping: 0.7,
-                               initialSpringVelocity: 0.3,
+                               usingSpringWithDamping: 0.6,
+                               initialSpringVelocity: 0.4,
                                options: UIViewAnimationOptions.curveEaseInOut,
                                
                                animations: {
@@ -888,23 +869,23 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         
     }
     
-//    func navigationController(_ navigationController:UINavigationController,
-//                              animationControllerFor operation: UINavigationControllerOperation,
-//                              from fromVC: UIViewController,
-//                              to toVC:UIViewController) -> UIViewControllerAnimatedTransitioning?
-//    {
-//        
-//        
-//        if (operation == UINavigationControllerOperation.push){
-//            return PushAnimator.init()
-//        }
-//        
-//        if (operation == UINavigationControllerOperation.pop){
-//            return PopAnimator.init()
-//        }
-//        return nil
-//        
-//    }
+    func navigationController(_ navigationController:UINavigationController,
+                              animationControllerFor operation: UINavigationControllerOperation,
+                              from fromVC: UIViewController,
+                              to toVC:UIViewController) -> UIViewControllerAnimatedTransitioning?
+    {
+        
+        
+        if (operation == UINavigationControllerOperation.push){
+            return PushAnimator.init()
+        }
+        
+        if (operation == UINavigationControllerOperation.pop){
+            return PopAnimator.init()
+        }
+        return nil
+        
+    }
 
 }
 

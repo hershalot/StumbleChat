@@ -288,22 +288,10 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
 
         let velocity = gesture.velocity(in: self.view)
         let translation = gesture.translation(in: self.view)
-        
-        
-        print("frame coords minX: ")
-        print(self.view.frame.minX)
-        
-        print("Velocity: ")
-        print(velocity)
-//        print("Gesture Center: ")
-//        print(gesture.view!.center)
-        print("frame translation: ")
-        print(translation.x)
-        print("frame coords midX: ")
-        print(self.view.frame.midX)
+
 
         
-        if (gesture.state == .began) {
+        if (gesture.state == .began || gesture.state == .changed) {
             
             
             
@@ -318,28 +306,20 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         
 
         }
-        else if (gesture.state == .changed){
-            
-
-            gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
-                
-                
-            gesture.setTranslation(CGPoint.zero, in: self.view)
-
-            
-        }
-        //on swipe, goto searchView
+        
+        
         else if (gesture.state == .ended){
             
+            //on swipe, goto searchView
             if (velocity.x < -1300){
                 darkenView()
                 let tempCenter = gesture.view!.center.x
-//                self.view.transform = CGAffineTransform(translationX: self.view.frame.minX, y: 0)
+
                 
-                UIView.animate(withDuration: 0.6,
+                UIView.animate(withDuration: 0.5,
                                delay: 0.0,
-                               usingSpringWithDamping: 0.7,
-                               initialSpringVelocity: 0.3,
+                               usingSpringWithDamping: 0.6,
+                               initialSpringVelocity: 0.4,
                                             options: UIViewAnimationOptions.curveEaseInOut,
                     animations: {
                         self.view.transform = CGAffineTransform(translationX: (-self.view.frame.size.width/2 - tempCenter), y: 0)
@@ -364,10 +344,10 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
                         }else{
                             let tempCenter = gesture.view!.center.x
                             
-                            UIView.animate(withDuration: 0.7,
+                            UIView.animate(withDuration: 0.5,
                                            delay: 0.0,
-                                           usingSpringWithDamping: 0.7,
-                                           initialSpringVelocity: 0.3,
+                                           usingSpringWithDamping: 0.6,
+                                           initialSpringVelocity: 0.4,
                                            options: UIViewAnimationOptions.curveEaseInOut,
                                            animations: {
                                             
@@ -400,10 +380,10 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
                 
                             let tempCenter = gesture.view!.center.x
             
-                            UIView.animate(withDuration: 0.7,
+                            UIView.animate(withDuration: 0.5,
                                            delay: 0.0,
-                                           usingSpringWithDamping: 0.7,
-                                           initialSpringVelocity: 0.3,
+                                           usingSpringWithDamping: 0.6,
+                                           initialSpringVelocity: 0.4,
                                                 options: UIViewAnimationOptions.curveEaseInOut,
                                 animations: {
             
@@ -422,10 +402,10 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
             else if (self.view.frame.midX < 0){
                                 darkenView()
                                 let tempCenter = gesture.view!.center.x
-                                UIView.animate(withDuration: 0.7,
+                                UIView.animate(withDuration: 0.5,
                                                delay: 0.0,
-                                               usingSpringWithDamping: 0.7,
-                                               initialSpringVelocity: 0.3,
+                                               usingSpringWithDamping: 0.6,
+                                               initialSpringVelocity: 0.4,
                                                             options: UIViewAnimationOptions.curveEaseInOut,
                                                             
                                     animations: {
@@ -450,10 +430,10 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
                                         }else{
                                             let tempCenter = gesture.view!.center.x
                                             
-                                            UIView.animate(withDuration: 0.7,
+                                            UIView.animate(withDuration: 0.5,
                                                            delay: 0.0,
-                                                           usingSpringWithDamping: 0.7,
-                                                           initialSpringVelocity: 0.3,
+                                                           usingSpringWithDamping: 0.6,
+                                                           initialSpringVelocity: 0.4,
                                                            options: UIViewAnimationOptions.curveEaseInOut,
                                                            animations: {
                                                             
