@@ -33,6 +33,7 @@ class SearchViewController: UIViewController {
     
     // Once connected to another user, will contain the MessagingChannel ID between the two users
     var channelID: String!
+    var rotateLabel: UILabel!
     
     //initially set to -1 so we can know when both pools have returned (will return with int > 0)
     var passiveUsers: Int = -1
@@ -47,7 +48,9 @@ class SearchViewController: UIViewController {
     
     //Current Users pool, will be either "AggressivePool" or "PassivePool"
     var myCurrentPool: String!
-    
+    var startImage: UIImageView!
+    var rightView: UIView!
+
     
     //Views used for the searching animation
     @IBOutlet weak var topLeftIndicator: UIView!
@@ -58,6 +61,10 @@ class SearchViewController: UIViewController {
     //Label that displays once a connection has begun to establish
     @IBOutlet weak var connectingLbl: UILabel!
     
+    @IBOutlet weak var mainSearchLbl: UILabel!
+    
+
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,49 +73,69 @@ class SearchViewController: UIViewController {
         overlayView = UIView.init(frame: self.view.bounds)
         
         self.view.addSubview(overlayView)
-        
-        
-        self.connectingLbl.isHidden = true
-        self.topLeftIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
-        self.bottomRightIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 0.7)
 
+        rotateSearchLbl()
+        self.rotateLabel.isHidden = false
+        self.connectingLbl.isHidden = true
+        self.mainSearchLbl.isHidden = true
         
-        
+    
         
         NotificationCenter.default.addObserver(self, selector: #selector(appMovedToInactive), name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(appWillTerminate), name: NSNotification.Name.UIApplicationWillTerminate, object: nil)
         
-        //Add swipe Observer
-        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
-        swipeRight.direction = UISwipeGestureRecognizerDirection.right
-        self.view.addGestureRecognizer(swipeRight)
-        
-        
-
-
     }
     
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
 //        
-////        self.dismiss(animated: false, completion: nil)
-//        self.removeFromParentViewController()
+//        
+//        self.topLeftIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
+//        self.bottomRightIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 0.7)
+//       
+//        
+//        
 //    }
-    
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         ref = FIRDatabase.database().reference()
-        
+//        self.navigationController?.delegate = self;
         self.overlayView.isHidden = true
+        self.rotateLabel.isHidden = true
+        self.mainSearchLbl.isHidden = false
+        
+        
+        
+        //setting the pan right image as
+        startImage = UIImageView.init(frame: CGRect(x: -self.view.frame.width, y: 0, width: self.view.frame.width, height:self.view.frame.height))
+        
+        rightView = UIView.init(frame: CGRect(x: self.view.frame.width, y: 0, width: self.view.frame.width, height:self.view.frame.height))
+        
+        rightView.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
+        startImage.contentMode = .scaleToFill
+        startImage.image = UIImage(named: "startScreen")
+
+        
+        
+        //Pan Gesture setup
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.respondToPanGesture))
+        self.view.addGestureRecognizer(panGesture)
+        
+
+        self.connectingLbl.isHidden = true
+        self.topLeftIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
+        self.bottomRightIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 0.7)
+        
         //start searching animation
         self.startIndicator()
         
         //If network connection is active, call setPool() to determine the pool to add to
         if (self.connectedToNetwork()){
+            
             setPool()
             
         }else{
@@ -117,10 +144,9 @@ class SearchViewController: UIViewController {
             
             let defaultAction = UIAlertAction(title: "OK", style: .default){ action in
                 
+                self.showStartView(animated: true)
+//                self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
                 
-                self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
-                
-//                self.performSegue(withIdentifier: "toStartView", sender: nil)
                 
             }
             alertController.addAction(defaultAction)
@@ -129,7 +155,23 @@ class SearchViewController: UIViewController {
             
         }
         
-//        self.navigationController?.isNavigationBarHidden = true
+    }
+    
+    func rotateSearchLbl(){
+        
+        rotateLabel = UILabel(frame: CGRect(x:10, y:(self.view.frame.size.height/2 - 75), width:40, height:200))
+        
+        rotateLabel.textAlignment = .right
+        rotateLabel.font = UIFont.init(name: "Arial", size: 35)
+        rotateLabel.text = "Search"
+        
+        rotateLabel.textColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
+        
+        self.view.addSubview(rotateLabel)
+        
+        rotateLabel.transform = CGAffineTransform(rotationAngle: CGFloat(-M_PI_2))
+        
+        rotateLabel.frame = CGRect(x:10, y:self.view.frame.size.height/2 - 75, width:40, height:200)
         
     }
     
@@ -139,8 +181,8 @@ class SearchViewController: UIViewController {
     func appMovedToInactive(_ animated: Bool) {
         
         print("App Resigning")
-//        performSegue(withIdentifier: "toStartView", sender: nil)
-        self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
+        self.showStartView(animated: true)
+//        self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
         
     }
     
@@ -165,8 +207,6 @@ class SearchViewController: UIViewController {
     }
     
 
-    
-    
     //compares the two pool sizes and sets the users pool to the one with the least users
     func setPool(){
         
@@ -234,7 +274,6 @@ class SearchViewController: UIViewController {
                             "matchedToUserID": "none",
                             "matchedToUserName": "none",
                             "channelID": "none"
-//                            "token":mToken
                 ]
                 
                 ref.child(passivePool).child(userID).setValue(data)
@@ -250,21 +289,7 @@ class SearchViewController: UIViewController {
         
     }
     
-    
-    //remove from matched pool upon searching start -- add check to see if you exist in matched pool
-//    func removeFromMatchedPool(){
-//        
-//            ref.child("MatchedUsers").child(userID).removeValue()
-//        
-//    
-//    }
-    
-    /*
-    * searchForMatch(String) -> takes the current user's pool and matches them to a user from the opposite pool
-    *
-    *
-    */
-    
+
     func searchForMatch(pool: String){
         
         senderName = "Test User"
@@ -316,7 +341,7 @@ class SearchViewController: UIViewController {
                         }
                         
                     }
-
+//                    self.darkenView()
                     self.perform(#selector(self.showMessagingView), with: nil, afterDelay: 1.0)
                     
 
@@ -351,7 +376,7 @@ class SearchViewController: UIViewController {
                         
                         refWatch.removeAllObservers()
                         self.ref.child(self.passivePool).child(self.userID).removeValue()
-                        
+//                        self.darkenView()
                         self.perform(#selector(self.showMessagingView), with: nil, afterDelay: 1.0)
                         
                     }
@@ -381,17 +406,9 @@ class SearchViewController: UIViewController {
         messagingVC.channelID = self.channelID
         
         
-        darkenView()
         stopIndicator()
         print("pushing search onto stack")
         
-//        let transition = CATransition()
-//        transition.duration = 0.3
-//        transition.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
-//        transition.type = kCATransitionFade
-//        
-//        //            transition.
-//        navi?.view.layer.add(transition, forKey: nil)
         
         navi?.pushViewController(messagingVC, animated: true)
         self.removeFromParentViewController()
@@ -401,11 +418,11 @@ class SearchViewController: UIViewController {
     
     
     
-    func showStartView(){
+    func showStartView(animated: Bool){
      
         
-//        performSegue(withIdentifier: "toMessagingView", sender: nil)
         let cxnCheckRef = ref.child(myCurrentPool).child(self.userID)
+        
         cxnCheckRef.removeAllObservers()
         
         
@@ -418,15 +435,8 @@ class SearchViewController: UIViewController {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let navi = appDelegate.navigationController
-        
-//        let transition = CATransition()
-//        transition.duration = 0.3
-//        transition.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
-//        transition.type = kCATransitionFade
-//        
-//        //            transition.
-//        navi?.view.layer.add(transition, forKey: nil)
-        _ = navi?.popViewController(animated: true)
+
+        _ = navi?.popViewController(animated: animated)
     }
     
     
@@ -516,34 +526,136 @@ class SearchViewController: UIViewController {
  * Left -> toSearchView
  */
     
-    func respondToSwipeGesture(gesture: UIGestureRecognizer) {
-        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
-            switch swipeGesture.direction {
-                
-            case UISwipeGestureRecognizerDirection.right:
-                print("Swiped right")
-                
-                showStartView()
-                
-//                performSegue(withIdentifier: "toStartView", sender: nil)
-                
-                
-                
-            case UISwipeGestureRecognizerDirection.down:
-                print("Swiped down")
-                
-            case UISwipeGestureRecognizerDirection.left:
-                print("Swiped left")
-                
+    
+    
+    func respondToPanGesture(gesture: UIPanGestureRecognizer){
+        
+        
+        let velocity = gesture.velocity(in: self.view)
+        let translation = gesture.translation(in: self.view)
+        
+        
+        print("frame coords minX: ")
+        print(self.view.frame.minX)
+        print("frame coords midX: ")
+        print(self.view.frame.midX)
+        print("New Center: ")
+        print(gesture.view!.center.x + translation.x)
+        
+        
+        if (gesture.state == .began) {
+            
+            self.view.addSubview(startImage)
+            self.view.addSubview(rightView)
 
-            case UISwipeGestureRecognizerDirection.up:
-                print("Swiped up")
+
+            gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
                 
-            default:
-                break
-            }
+            gesture.setTranslation(CGPoint.zero, in: self.view)
+
+                
+        
+            
+            
         }
+        else if (gesture.state == .changed){
+            
+
+                gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
+                
+                
+                gesture.setTranslation(CGPoint.zero, in: self.view)
+
+            
+            
+            
+            
+        }
+            
+        else if (gesture.state == .ended){
+            
+            //on fast pan, go back to startView
+            if (velocity.x > 2000){
+                
+                print("animation velocity reached")
+//                let tempCenter = gesture.view!.center.x
+                darkenView()
+                UIView.animate(withDuration: 0.4,
+                               delay: 0.0,
+                               usingSpringWithDamping: 0.7,
+                               initialSpringVelocity: 0.4,
+                               options: UIViewAnimationOptions.curveEaseInOut,
+                               animations: {
+                                
+
+                                
+                                 self.view.transform = CGAffineTransform(translationX: self.view.frame.width - self.view.frame.minX, y: 0)
+                                
+                },
+                               completion: { finished in
+                                
+                                print("Completed")
+                                self.showStartView(animated: false)
+                                
+                                
+                })
+                
+                
+            }
+
+            //on before middle of screen, stay in search view
+            else if (self.view.frame.midX <= self.view.frame.width){
+                
+                let tempCenter = gesture.view!.center.x
+                
+                UIView.animate(withDuration: 0.9,
+                               delay: 0.0,
+                               usingSpringWithDamping: 0.7,
+                               initialSpringVelocity: 0.4,
+                               options: UIViewAnimationOptions.curveEaseInOut,
+                               animations: {
+                                
+                                
+                                self.view.transform = CGAffineTransform(translationX: self.view.frame.size.width/2 - tempCenter, y: 0)
+                                
+                },
+                               completion: { finished in
+                                print("Completed")
+                                
+                                
+                })
+            }
+            //On passed middle of screen, goto start view
+            else if (self.view.frame.midX > self.view.frame.width){
+
+                darkenView()
+                UIView.animate(withDuration: 0.8,
+                               delay: 0.0,
+                               usingSpringWithDamping: 0.7,
+                               initialSpringVelocity: 0.3,
+                               options: UIViewAnimationOptions.curveEaseInOut,
+                               
+                               animations: {
+
+                                self.view.transform = CGAffineTransform(translationX: self.view.frame.width - self.view.frame.minX, y: 0)
+                                
+                },
+                               completion: { finished in
+                                print("Completed")
+                                self.showStartView(animated: false)
+                                
+                                
+                })
+                
+            }
+            
+            
+            
+            
+        }
+        
     }
+
     
     
     //stop the custom loading indicator
@@ -553,13 +665,12 @@ class SearchViewController: UIViewController {
         
     }
     
-    
-    
+
     func darkenView(){
         
         //darken this view
         
-        overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
+        overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.3)
         self.overlayView.isHidden = false
 
     }
@@ -592,10 +703,27 @@ class SearchViewController: UIViewController {
             
             stopIndicator()
             ref.child(self.myCurrentPool).child(self.userID).removeValue()
-//            self.dismiss(animated: false, completion: nil)
-//            self.navigationController?.popViewController(animated: false)
+
             
         }
+        
+    }
+    
+    func navigationController(_ navigationController:UINavigationController,
+                              animationControllerFor operation: UINavigationControllerOperation,
+                              from fromVC: UIViewController,
+                              to toVC:UIViewController) -> UIViewControllerAnimatedTransitioning?
+    {
+        
+        
+        if (operation == UINavigationControllerOperation.push){
+            return PushAnimator.init()
+        }
+        
+        if (operation == UINavigationControllerOperation.pop){
+            return PopAnimator.init()
+        }
+        return nil
         
     }
     

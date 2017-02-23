@@ -16,8 +16,8 @@
 		5E4338DD1E5BA93E00544BE1 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4338DC1E5BA93E00544BE1 /* NavigationController.swift */; };
 		5E4B20561E56175200D2EC4C /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4B20551E56175200D2EC4C /* AboutViewController.swift */; };
 		5EA68FAE1E53751500E9306D /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA68FAD1E53751500E9306D /* SearchViewController.swift */; };
-		5EA68FB01E53BCA400E9306D /* SegueFromRight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA68FAF1E53BCA400E9306D /* SegueFromRight.swift */; };
-		5EA68FB31E5522B500E9306D /* SegueFromLeft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA68FB21E5522B500E9306D /* SegueFromLeft.swift */; };
+		5EA68FB01E53BCA400E9306D /* PushAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA68FAF1E53BCA400E9306D /* PushAnimator.swift */; };
+		5EA68FB31E5522B500E9306D /* PopAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA68FB21E5522B500E9306D /* PopAnimator.swift */; };
 		5EBFA9F91E57D67400406B38 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5EBFA9F81E57D67400406B38 /* Assets.xcassets */; };
 		8F47D14A67B8E822BD950D97 /* Pods_StumbleChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD413D087B598464DC677CA8 /* Pods_StumbleChat.framework */; };
 /* End PBXBuildFile section */
@@ -36,9 +36,9 @@
 		5E4338DC1E5BA93E00544BE1 /* NavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		5E4B20551E56175200D2EC4C /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		5EA68FAD1E53751500E9306D /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
-		5EA68FAF1E53BCA400E9306D /* SegueFromRight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegueFromRight.swift; sourceTree = "<group>"; };
+		5EA68FAF1E53BCA400E9306D /* PushAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushAnimator.swift; sourceTree = "<group>"; };
 		5EA68FB11E54EADE00E9306D /* StumbleChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StumbleChat.entitlements; sourceTree = "<group>"; };
-		5EA68FB21E5522B500E9306D /* SegueFromLeft.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegueFromLeft.swift; sourceTree = "<group>"; };
+		5EA68FB21E5522B500E9306D /* PopAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopAnimator.swift; sourceTree = "<group>"; };
 		5EBFA9F81E57D67400406B38 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6EABB3793D039A982E48A120 /* Pods-StumbleChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StumbleChat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StumbleChat/Pods-StumbleChat.debug.xcconfig"; sourceTree = "<group>"; };
 		CD413D087B598464DC677CA8 /* Pods_StumbleChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_StumbleChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,8 +88,8 @@
 				5E19271E1E52402D00AFBE49 /* MessagingViewController.swift */,
 				5E1927231E5258B900AFBE49 /* GoogleService-Info.plist */,
 				5EA68FAD1E53751500E9306D /* SearchViewController.swift */,
-				5EA68FAF1E53BCA400E9306D /* SegueFromRight.swift */,
-				5EA68FB21E5522B500E9306D /* SegueFromLeft.swift */,
+				5EA68FAF1E53BCA400E9306D /* PushAnimator.swift */,
+				5EA68FB21E5522B500E9306D /* PopAnimator.swift */,
 				5E4B20551E56175200D2EC4C /* AboutViewController.swift */,
 				5E4338DC1E5BA93E00544BE1 /* NavigationController.swift */,
 			);
@@ -243,12 +243,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5EA68FB31E5522B500E9306D /* SegueFromLeft.swift in Sources */,
+				5EA68FB31E5522B500E9306D /* PopAnimator.swift in Sources */,
 				5E4338DD1E5BA93E00544BE1 /* NavigationController.swift in Sources */,
 				5E19270F1E52095A00AFBE49 /* StartViewController.swift in Sources */,
 				5E4B20561E56175200D2EC4C /* AboutViewController.swift in Sources */,
 				5E19270D1E52095A00AFBE49 /* AppDelegate.swift in Sources */,
-				5EA68FB01E53BCA400E9306D /* SegueFromRight.swift in Sources */,
+				5EA68FB01E53BCA400E9306D /* PushAnimator.swift in Sources */,
 				5EA68FAE1E53751500E9306D /* SearchViewController.swift in Sources */,
 				5E19271F1E52402D00AFBE49 /* MessagingViewController.swift in Sources */,
 			);

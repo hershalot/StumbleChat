@@ -20,9 +20,7 @@ class AboutViewController: UIViewController{
         let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
         swipeLeft.direction = UISwipeGestureRecognizerDirection.left
         self.view.addGestureRecognizer(swipeLeft)
-        
-        
-        
+
     }
     
     

@@ -25,7 +25,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //network connection check
         if (self.connectedToNetwork()){
             
-            
             FIRApp.configure()
             
             self.loginAnon()

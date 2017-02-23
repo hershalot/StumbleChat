@@ -112,6 +112,7 @@
                     <navigationItem key="navigationItem" id="X2H-Cw-38u"/>
                     <connections>
                         <outlet property="bearImage" destination="BIX-mt-RUv" id="T7N-o7-KyN"/>
+                        <outlet property="chatBtn" destination="05h-Mb-8RZ" id="a4Q-21-t8I"/>
                         <outlet property="displayLbl" destination="V2z-vh-aXL" id="DXU-x6-QX0"/>
                         <outlet property="displayNameText" destination="fL5-4T-s8j" id="KRt-qw-ynC"/>
                         <segue destination="kA2-iE-cyB" kind="custom" identifier="toSearchView" customClass="SegueFromRight" customModule="StumbleChat" customModuleProvider="target" id="UG6-fO-Oly"/>
@@ -209,6 +210,7 @@
                         <outlet property="bottomLeftIndicator" destination="Cfu-aq-ely" id="9CF-ra-n3i"/>
                         <outlet property="bottomRightIndicator" destination="Ybg-jN-2bn" id="zMi-2i-5aA"/>
                         <outlet property="connectingLbl" destination="mRU-uP-eTv" id="e3c-UF-e3I"/>
+                        <outlet property="mainSearchLbl" destination="Acz-oI-Xiv" id="GBE-bm-egz"/>
                         <outlet property="topLeftIndicator" destination="oyx-Ds-BPb" id="Brv-Is-d0E"/>
                         <outlet property="topRightIndicator" destination="ueY-vr-wXH" id="ygy-gE-ve7"/>
                         <segue destination="VfU-hC-DoX" kind="custom" identifier="toMessagingView" customClass="SegueFromLeft" customModule="StumbleChat" customModuleProvider="target" id="lvX-HY-20b"/>
@@ -317,7 +319,7 @@
         <image name="Woolybear" width="3000" height="3000"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="vec-Bs-WMw"/>
-        <segue reference="DY7-dq-i0N"/>
+        <segue reference="Nac-cy-fPn"/>
+        <segue reference="UG6-fO-Oly"/>
     </inferredMetricsTieBreakers>
 </document>

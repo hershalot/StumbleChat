@@ -15,7 +15,7 @@ import UIKit
 import Firebase
 import EAIntroView
 
-class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate, EAIntroDelegate {
+class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecognizerDelegate, EAIntroDelegate, UINavigationControllerDelegate {
     
     //variables
     var uid: NSString = ""
@@ -25,6 +25,10 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     var introView: EAIntroView!
     var overlayView: UIView!
     
+    var searchVC: SearchViewController!
+    var searchView: UIView!
+    var leftView: UIView!
+    var baseView:CALayer!
     
     @IBOutlet weak var bearImage: UIImageView!
     
@@ -34,12 +38,12 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     //mark Outlets
     @IBOutlet weak var displayNameText: UITextField!
     
+    @IBOutlet weak var chatBtn: UIButton!
     
     //mark Actions
     @IBAction func startChattingAction(_ sender: Any) {
         
-        
-        startChat()
+        startChat(animated: true)
         
     }
     
@@ -55,51 +59,65 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         //configure textField border
         let border = CALayer()
         let width = CGFloat(1.0)
+        
+//        baseView = self.view.layer
+        //-- other UI setup -- for view snapshot used in Pan navigatin
+        self.navigationController?.delegate = self
+        
         border.borderColor = UIColor.darkGray.cgColor
         border.frame = CGRect(x: 0, y: displayNameText.frame.size.height - width, width:  displayNameText.frame.size.width, height: displayNameText.frame.size.height)
         border.borderWidth = width
         displayNameText.layer.addSublayer(border)
         displayNameText.layer.masksToBounds = true
         
+        leftView = UIView.init(frame: CGRect(x: 0 - self.view.frame.size.width, y:0, width:self.view.frame.size.width, height: self.view.frame.size.height ))
+        leftView.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 0.9)
+        
+        searchVC = self.storyboard?.instantiateViewController(withIdentifier: "searchView") as! SearchViewController
+        searchView = searchVC.view
+        searchView.frame = CGRect(x: self.view.frame.size.width, y:0, width: searchView.frame.size.width, height: searchView.frame.size.height)
+        self.view.addSubview(leftView)
+        self.view.addSubview(searchView)
+        
+        
+//        
+//        self.chatBtn.frame = CGRect(x:0, y: self.view.frame.size.height - (self.view.frame.height * 0.6),width: self.view.frame.size.width , height:self.view.frame.height * 0.4 )
+        
+        
+        
         //swipe down gesture recognizer to dismiss keyboard
-//        let swipeDown: UISwipeGestureRecognizer = UISwipeGestureRecognizer.init(target: self.view, action:dismissKeyboard)
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
         swipeDown.direction = UISwipeGestureRecognizerDirection.down
         self.view.addGestureRecognizer(swipeDown)
         
-        
-        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
-        swipeLeft.direction = UISwipeGestureRecognizerDirection.left
-        self.view.addGestureRecognizer(swipeLeft)
-        
-//        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
-//        swipeRight.direction = UISwipeGestureRecognizerDirection.right
-//        self.view.addGestureRecognizer(swipeRight)
-        
-        
+
 
         
     }
     
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//        
-////        self.dismiss(animated: false, completion: nil)
-//        
-//    }
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.overlayView.isHidden = true
+
+        //need to capture view Of SearchView, then set VC to nil otherwise searching starts on Pan
+        // IS THERE A BETTER WAY TO DO THIS?
+
         
+        searchVC = nil
+        
+        self.navigationController?.delegate = self
+        
+        //Pan Gesture Recognizer
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.respondToPanGesture))
+        self.view.addGestureRecognizer(panGesture)
+        
+        self.overlayView.isHidden = true
         //set firebase base reference
         ref = FIRDatabase.database().reference()
         self.displayNameText.delegate = self
-        
-//        self.navigationController?.isNavigationBarHidden = true
-        
+
         let defaults = UserDefaults.standard;
         displayName = defaults.string(forKey: "displayName")! as String
         
@@ -141,7 +159,7 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
      * startChat() --> Checks to make sure user entered a displayName, performs toSearchView segue if so
      */
     
-    func startChat(){
+    func startChat(animated: Bool){
         
         if(displayNameText.text != ""){
             
@@ -150,13 +168,9 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
             defaults.synchronize()
             
             darkenView()
+            showSearchView(animated: animated)
 
-            let searchVC = self.storyboard?.instantiateViewController(withIdentifier: "searchView") as! SearchViewController
-            
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            let navi = appDelegate.navigationController
-            
-            navi?.pushViewController(searchVC, animated: true)
+
 
             
         }else{
@@ -172,7 +186,20 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         
     }
     
-
+    func showSearchView(animated: Bool){
+        
+//        darkenView()
+        
+        searchVC = self.storyboard?.instantiateViewController(withIdentifier: "searchView") as! SearchViewController
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let navi = appDelegate.navigationController
+        
+        navi?.pushViewController(searchVC, animated: animated)
+        self.searchView = nil
+        self.leftView = nil
+        
+    }
     
     
     /*
@@ -225,7 +252,7 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     func darkenView(){
         
         
-        overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
+        overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.3)
         self.overlayView.isHidden = false
         
     }
@@ -254,6 +281,215 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         return true
     }
     
+    
+    
+    func respondToPanGesture(gesture: UIPanGestureRecognizer){
+        
+
+        let velocity = gesture.velocity(in: self.view)
+        let translation = gesture.translation(in: self.view)
+        
+        
+        print("frame coords minX: ")
+        print(self.view.frame.minX)
+        
+        print("Velocity: ")
+        print(velocity)
+//        print("Gesture Center: ")
+//        print(gesture.view!.center)
+        print("frame translation: ")
+        print(translation.x)
+        print("frame coords midX: ")
+        print(self.view.frame.midX)
+
+        
+        if (gesture.state == .began) {
+            
+            
+            
+            
+            gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
+                
+            gesture.setTranslation(CGPoint.zero, in: self.view)
+    
+
+
+            
+        
+
+        }
+        else if (gesture.state == .changed){
+            
+
+            gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
+                
+                
+            gesture.setTranslation(CGPoint.zero, in: self.view)
+
+            
+        }
+        //on swipe, goto searchView
+        else if (gesture.state == .ended){
+            
+            if (velocity.x < -2000){
+                darkenView()
+                let tempCenter = gesture.view!.center.x
+//                self.view.transform = CGAffineTransform(translationX: self.view.frame.minX, y: 0)
+                
+                UIView.animate(withDuration: 0.6,
+                               delay: 0.0,
+                               usingSpringWithDamping: 0.7,
+                               initialSpringVelocity: 0.3,
+                                            options: UIViewAnimationOptions.curveEaseInOut,
+                    animations: {
+                        self.view.transform = CGAffineTransform(translationX: (-self.view.frame.size.width/2 - tempCenter), y: 0)
+                        
+                },
+                    completion: { finished in
+                        print("Completed")
+                        
+                        
+                        //check for display Name
+                        if(self.displayNameText.text != ""){
+                            
+                            let defaults = UserDefaults.standard;
+                            defaults.set(self.displayName, forKey: "displayName")
+                            defaults.synchronize()
+                            
+                            self.showSearchView(animated: false)
+                            
+                            
+                            
+                            
+                        }else{
+                            let tempCenter = gesture.view!.center.x
+                            
+                            UIView.animate(withDuration: 0.7,
+                                           delay: 0.0,
+                                           usingSpringWithDamping: 0.7,
+                                           initialSpringVelocity: 0.3,
+                                           options: UIViewAnimationOptions.curveEaseInOut,
+                                           animations: {
+                                            
+                                            
+                                            self.view.transform = CGAffineTransform(translationX: self.view.frame.size.width/2 - tempCenter, y: 0)
+                                            
+                            },
+                                           completion: { finished in
+                                            print("Completed")
+                                            
+                                            
+                            })
+                            
+                            let alertController = UIAlertController(title: "Wait!", message: "Enter a display name", preferredStyle: .alert)
+                            
+                            let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                            alertController.addAction(defaultAction)
+                            
+                            self.present(alertController, animated: true, completion: nil)
+                            
+                        }
+
+                        
+                })
+
+                
+            }
+            //on less than half screen pan, stay on startView
+            else if (self.view.frame.midX >= 0){
+                
+                            let tempCenter = gesture.view!.center.x
+            
+                            UIView.animate(withDuration: 0.7,
+                                           delay: 0.0,
+                                           usingSpringWithDamping: 0.7,
+                                           initialSpringVelocity: 0.3,
+                                                options: UIViewAnimationOptions.curveEaseInOut,
+                                animations: {
+            
+
+                                    self.view.transform = CGAffineTransform(translationX: self.view.frame.size.width/2 - tempCenter, y: 0)
+            
+                            },
+                                completion: { finished in
+                                    print("Completed")
+
+            
+                            })
+            }
+            
+            //on more than half screen pan goto searchView
+            else if (self.view.frame.midX < 0){
+                                darkenView()
+                                let tempCenter = gesture.view!.center.x
+                                UIView.animate(withDuration: 0.7,
+                                               delay: 0.0,
+                                               usingSpringWithDamping: 0.7,
+                                               initialSpringVelocity: 0.3,
+                                                            options: UIViewAnimationOptions.curveEaseInOut,
+                                                            
+                                    animations: {
+            
+                                        self.view.transform = CGAffineTransform(translationX:-self.view.frame.size.width/2 - tempCenter, y: 0)
+            
+                                },
+                                    completion: { finished in
+                                        print("Completed")
+                                        //check for display Name
+                                        if(self.displayNameText.text != ""){
+                                            
+                                            let defaults = UserDefaults.standard;
+                                            defaults.set(self.displayName, forKey: "displayName")
+                                            defaults.synchronize()
+                                            
+                                            self.showSearchView(animated: false)
+                                            
+                                            
+                                            
+                                            
+                                        }else{
+                                            let tempCenter = gesture.view!.center.x
+                                            
+                                            UIView.animate(withDuration: 0.7,
+                                                           delay: 0.0,
+                                                           usingSpringWithDamping: 0.7,
+                                                           initialSpringVelocity: 0.3,
+                                                           options: UIViewAnimationOptions.curveEaseInOut,
+                                                           animations: {
+                                                            
+                                                            
+                                                            self.view.transform = CGAffineTransform(translationX: self.view.frame.size.width/2 - tempCenter, y: 0)
+                                                            
+                                            },
+                                                           completion: { finished in
+                                                            print("Completed")
+                                                            
+                                                            
+                                            })
+                                            
+                                            let alertController = UIAlertController(title: "Wait!", message: "Enter a display name", preferredStyle: .alert)
+                                            
+                                            let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                                            alertController.addAction(defaultAction)
+                                            
+                                            self.present(alertController, animated: true, completion: nil)
+                                            
+                                        }
+
+                                        
+                                })
+                            
+                        }
+
+            
+            
+            
+        }
+        
+        
+    }
+    
+    
 /*
 * Swipe Gesture Handler -> call startChat() on swipe left
                         -> resignFirstResponder on swipe down to get rid of the keyboard
@@ -276,8 +512,6 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
             case UISwipeGestureRecognizerDirection.left:
                 print("Swiped left")
                 
-                startChat()
-                
             case UISwipeGestureRecognizerDirection.up:
                 print("Swiped up")
                 
@@ -285,6 +519,28 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
                 break
             }
         }
+    }
+    
+    
+    
+    //NAvigation Controller Animation Operation 
+    
+    func navigationController(_ navigationController:UINavigationController,
+                              animationControllerFor operation: UINavigationControllerOperation,
+                              from fromVC: UIViewController,
+                              to toVC:UIViewController) -> UIViewControllerAnimatedTransitioning?
+    {
+        
+        
+        if (operation == UINavigationControllerOperation.push){
+            return PushAnimator.init()
+        }
+    
+        if (operation == UINavigationControllerOperation.pop){
+            return PopAnimator.init()
+        }
+        return nil
+        
     }
 }
 

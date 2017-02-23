@@ -21,7 +21,7 @@ import Photos
 
 
 
-class MessagingViewController: JSQMessagesViewController {
+class MessagingViewController: JSQMessagesViewController, UINavigationControllerDelegate {
 
     private var alert: UIAlertController? = nil
     var channelID: String!
@@ -48,8 +48,10 @@ class MessagingViewController: JSQMessagesViewController {
     
     //messages array
     var messages = [JSQMessage]()
-    
+    var searchVC: SearchViewController!
+    var startView: UIImageView!
     var contentSize = 0.0
+    var searchView: UIView!
     
     lazy var outgoingBubbleImageView: JSQMessagesBubbleImage = self.setupOutgoingBubble()
     lazy var incomingBubbleImageView: JSQMessagesBubbleImage = self.setupIncomingBubble()
@@ -79,7 +81,9 @@ class MessagingViewController: JSQMessagesViewController {
 //        self.inputToolbar.contentView.leftBarButtonItem.setTitleColor(.white, for: .reserved)
         
         
-//        self.inputToolbar.contentView.rightBarButtonItem.tit
+        //Pan Gesture setup
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.respondToPanGesture))
+        self.view.addGestureRecognizer(panGesture)
         
         self.displayNameLbl.text = "chatting with " + self.senderDisplayName + "..."
         self.displayNameLbl.textColor = UIColor.lightGray
@@ -108,16 +112,10 @@ class MessagingViewController: JSQMessagesViewController {
         collectionView!.collectionViewLayout.incomingAvatarViewSize = CGSize.zero
         collectionView!.collectionViewLayout.outgoingAvatarViewSize = CGSize.zero
         
-        //Swipe Gesture recognizers
-        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
-        swipeLeft.direction = UISwipeGestureRecognizerDirection.left
-        self.view.addGestureRecognizer(swipeLeft)
-        
-        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(self.respondToSwipeGesture))
-        swipeRight.direction = UISwipeGestureRecognizerDirection.right
-        self.view.addGestureRecognizer(swipeRight)
         
         
+        
+        self.navigationController?.delegate = self;
         //begin messaging Channel Observer
         observeMessages()
         
@@ -127,10 +125,24 @@ class MessagingViewController: JSQMessagesViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        
         self.overlayView.isHidden = true
+        self.navigationController?.delegate = self;
         
-//        self.navigationController?.isNavigationBarHidden = true
+        //setting the pan right image as
+        startView = UIImageView.init(frame: CGRect(x: -self.view.frame.width, y: 0, width: self.view.frame.width, height:self.view.frame.height))
+        
+        searchVC = self.storyboard?.instantiateViewController(withIdentifier: "searchView") as! SearchViewController
+        searchView = searchVC.view
+        searchView.frame = CGRect(x:self.view.frame.width, y: 0, width: self.view.frame.width, height:self.view.frame.height)
+        startView.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 0.9)
+        startView.contentMode = .scaleToFill
+        startView.image = UIImage(named: "startScreen")
+        
+        self.view.addSubview(startView)
+        self.view.addSubview(searchView)
+        
+        
+        searchVC = nil
     }
     
     
@@ -163,17 +175,11 @@ class MessagingViewController: JSQMessagesViewController {
             finishSendingMessage()
             
         }
-        
-        //  deleting photos manually for now is easier since firebase has no recursive delete in storage
-        //            storageRef.delete(completion: { (Void) in
-        //                print("Deleting Photos")
-        //            })
-        
+
         mRef.removeValue()
         try! FIRAuth.auth()!.signOut()
         
-        
-        
+
     }
     
     //If no messages yet, create a placeholder so user can reconnect when the app becomes active again
@@ -529,19 +535,17 @@ class MessagingViewController: JSQMessagesViewController {
     
     
     // MARK: Navigation
-    func showSearchView(){
+    func showSearchView(animated: Bool){
     
         self.resignFirstResponder()
 //        self.removeRefObserver()
 
         let searchVC = self.storyboard?.instantiateViewController(withIdentifier: "searchView") as! SearchViewController
-
-        darkenView()
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let navi = appDelegate.navigationController
         
-        navi?.pushViewController(searchVC, animated: true)
+        navi?.pushViewController(searchVC, animated: animated)
         self.removeFromParentViewController()
         
     }
@@ -549,79 +553,290 @@ class MessagingViewController: JSQMessagesViewController {
     
     
     
-    func showStartView(){
+    func showStartView(animated: Bool){
         
         self.resignFirstResponder()
-
-        darkenView()
 
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let navi = appDelegate.navigationController
         
-        _ = navi?.popToRootViewController(animated: true)
+        _ = navi?.popToRootViewController(animated: animated)
         
 
     }
     
-    //Swipe Gesture Method
     
-    func respondToSwipeGesture(gesture: UIGestureRecognizer) {
-        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
-            switch swipeGesture.direction {
-            case UISwipeGestureRecognizerDirection.right:
-                print("Swiped right")
-                
-                
-                self.mRef.removeAllObservers()
-                
-                //send disconnnect string as message
-                let itemRef = mRef.childByAutoId()
-                let messageItem = [
-                    "senderId": senderId!,
-                    "senderName": senderDisplayName!,
-                    "text": "-1-2-3-4-5",
-                    ]
-                
-                itemRef.setValue(messageItem)
-                
-                finishSendingMessage()
-                
-                self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
-
-            case UISwipeGestureRecognizerDirection.down:
-                print("Swiped down")
-
-            case UISwipeGestureRecognizerDirection.left:
-                print("Swiped left")
-
-                self.mRef.removeAllObservers()
-                
-                if (!alreadyDisconnected){
-                    
-                    //send disconnnect string as message
-                    let itemRef = mRef.childByAutoId()
-                    let messageItem = [
-                        "senderId": senderId!,
-                        "senderName": senderDisplayName!,
-                        "text": "-1-2-3-4-5",
-                        ]
-                    
-                    itemRef.setValue(messageItem)
-                    finishSendingMessage()
-                    
-                }
-                
-                self.perform(#selector(self.showSearchView), with: nil, afterDelay: 0.0)
-                
-
-            case UISwipeGestureRecognizerDirection.up:
-                print("Swiped up")
-                
-            default:
-                break
-            }
+    
+    func respondToPanGesture(gesture: UIPanGestureRecognizer){
+        
+        
+        let velocity = gesture.velocity(in: self.view)
+        let translation = gesture.translation(in: self.view)
+        
+        
+        print("frame coords minX: ")
+        print(self.view.frame.minX)
+        print("frame coords midX: ")
+        print(self.view.frame.midX)
+        print("New Center: ")
+        print(gesture.view!.center.x + translation.x)
+        
+        
+        if (gesture.state == .began) {
+            
+            
+            
+            
+            gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
+            
+            gesture.setTranslation(CGPoint.zero, in: self.view)
+            
+            
+            
+            
+            
         }
+        else if (gesture.state == .changed){
+            
+            
+            gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
+            
+            
+            gesture.setTranslation(CGPoint.zero, in: self.view)
+            
+            
+            
+            
+            
+        }
+            
+        else if (gesture.state == .ended){
+            
+            //on fast pan right, go back to startView
+            if (velocity.x > 2000){
+                
+                print("animation velocity reached")
+//                let tempCenter = gesture.view!.center.x
+                
+                UIView.animate(withDuration: 0.4,
+                               delay: 0.0,
+                               usingSpringWithDamping: 0.7,
+                               initialSpringVelocity: 0.3,
+                               options: UIViewAnimationOptions.curveEaseInOut,
+                               animations: {
+                                
+                                
+                                self.view.transform = CGAffineTransform(translationX: self.view.frame.width - self.view.frame.minX, y: 0)
+                                
+                },
+                               completion: { finished in
+                                print("Completed Pan Right Fast")
+                                self.mRef.removeAllObservers()
+                                
+                                //send disconnnect string as message
+                                let itemRef = self.mRef.childByAutoId()
+                                let messageItem = [
+                                    "senderId": self.senderId!,
+                                    "senderName": self.senderDisplayName!,
+                                    "text": "-1-2-3-4-5",
+                                    ]
+                                
+                                itemRef.setValue(messageItem)
+                                
+                                self.finishSendingMessage()
+                                
+                                self.darkenView()
+                                self.showStartView(animated: false)
+//                                self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
+                                
+                                
+                })
+                
+                
+            }
+            
+            //on fast left pan, goto searchView
+            else if (velocity.x < -2000){
+                
+                print("animation velocity reached")
+//                let tempCenter = gesture.view!.center.x
+                
+                UIView.animate(withDuration: 0.4,
+                               delay: 0.0,
+                               usingSpringWithDamping: 0.7,
+                               initialSpringVelocity: 0.3,
+                               options: UIViewAnimationOptions.curveEaseInOut,
+                               animations: {
+
+                                self.view.transform = CGAffineTransform(translationX:  -(self.view.frame.width + self.view.frame.minX), y: 0)
+                                
+                                
+                },
+                               completion: { finished in
+                                print("Completed Pan Left Fast")
+                                self.mRef.removeAllObservers()
+                                
+                                if (!self.alreadyDisconnected){
+                                    
+                                    //send disconnnect string as message
+                                    let itemRef = self.mRef.childByAutoId()
+                                    let messageItem = [
+                                        "senderId": self.senderId!,
+                                        "senderName": self.senderDisplayName!,
+                                        "text": "-1-2-3-4-5",
+                                        ]
+                                    
+                                    itemRef.setValue(messageItem)
+                                    self.finishSendingMessage()
+                                    
+                                }
+                                self.darkenView()
+                                self.showSearchView(animated: false)
+//                                self.perform(#selector(self.showSearchView), with: nil, afterDelay: 0.0)
+                                
+                })
+                
+                
+            }
+                
+                //on before middle of screen, stay in search view
+            else if (self.view.frame.minX <= 0 && self.view.frame.minX >= -self.view.frame.width/2){
+                
+                let tempCenter = gesture.view!.center.x
+                
+                UIView.animate(withDuration: 0.4,
+                               delay: 0.0,
+                               usingSpringWithDamping: 0.7,
+                               initialSpringVelocity: 0.3,
+                               options: UIViewAnimationOptions.curveEaseInOut,
+                               animations: {
+                                
+                                
+                                self.view.transform = CGAffineTransform(translationX: self.view.frame.size.width/2 - tempCenter, y: 0)
+                                
+                },
+                               completion: { finished in
+                                print("Completed No Change, left Pan (Neg Vel)")
+                                
+                                
+                })
+            }
+                //On passed middle of screen, goto start view
+            else if (self.view.frame.minX <= 0 && self.view.frame.minX <= -self.view.frame.width/2){
+                let tempCenter = gesture.view!.center.x
+                
+                UIView.animate(withDuration: 0.4,
+                               delay: 0.0,
+                               usingSpringWithDamping: 0.7,
+                               initialSpringVelocity: 0.3,
+                               options: UIViewAnimationOptions.curveEaseInOut,
+                               
+                               animations: {
+                                
+                                self.view.transform = CGAffineTransform(translationX:-self.view.frame.size.width/2 - tempCenter, y: 0)
+                                
+                },
+                               completion: { finished in
+                                print("Completed Left Pan (Neg Vel)")
+                                self.mRef.removeAllObservers()
+                                
+                                if (!self.alreadyDisconnected){
+                                    
+                                    //send disconnnect string as message
+                                    let itemRef = self.mRef.childByAutoId()
+                                    let messageItem = [
+                                        "senderId": self.senderId!,
+                                        "senderName": self.senderDisplayName!,
+                                        "text": "-1-2-3-4-5",
+                                        ]
+                                    
+                                    itemRef.setValue(messageItem)
+                                    self.finishSendingMessage()
+                                    
+                                }
+                                self.darkenView()
+                                self.showSearchView(animated: false)
+//                                self.perform(#selector(self.showSearchView), with: nil, afterDelay: 0.0)
+                                
+                                
+                })
+                
+            }
+                
+                //on less than half screen pan stay in messageView -----FROM START VC
+            else if (self.view.frame.minX >= 0 && self.view.frame.minX <= self.view.frame.width/2){
+                
+                let tempCenter = gesture.view!.center.x
+                
+                UIView.animate(withDuration: 0.4,
+                               delay: 0.0,
+                               usingSpringWithDamping: 0.7,
+                               initialSpringVelocity: 0.3,
+                               options: UIViewAnimationOptions.curveEaseInOut,
+                               animations: {
+                                
+                                
+                                self.view.transform = CGAffineTransform(translationX: self.view.frame.size.width/2 - tempCenter, y: 0)
+                                
+                },
+                               completion: { finished in
+                                print("Completed No Change, Right Pan (Pos Vel)")
+                                
+                                
+                })
+            }
+                
+                //on more than half screen pan goto searchView -----FROM START VC
+            else if (self.view.frame.minX >= 0 && self.view.frame.minX > self.view.frame.width/2){
+                
+//                let tempCenter = gesture.view!.center.x
+                UIView.animate(withDuration: 0.4,
+                               delay: 0.0,
+                               usingSpringWithDamping: 0.7,
+                               initialSpringVelocity: 0.3,
+                               options: UIViewAnimationOptions.curveEaseInOut,
+                               
+                               animations: {
+                                
+                                
+                                
+                                self.view.transform = CGAffineTransform(translationX: self.view.frame.width - self.view.frame.minX, y: 0)
+                                
+                },
+                               completion: { finished in
+                                print("Completed Right Pan (Pos Vel)")
+                                //check for display Name
+                                self.mRef.removeAllObservers()
+                                
+                                if (!self.alreadyDisconnected){
+                                    
+                                    //send disconnnect string as message
+                                    let itemRef = self.mRef.childByAutoId()
+                                    let messageItem = [
+                                        "senderId": self.senderId!,
+                                        "senderName": self.senderDisplayName!,
+                                        "text": "-1-2-3-4-5",
+                                        ]
+                                    
+                                    itemRef.setValue(messageItem)
+                                    self.finishSendingMessage()
+                                    
+                                }
+                                self.darkenView()
+                                self.showStartView(animated: false)
+//                                self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
+
+                                    
+                                    
+                                
+                })
+                
+            }
+            
+        }
+        
     }
+
 
     
     //Handle the disconnected message
@@ -637,7 +852,10 @@ class MessagingViewController: JSQMessagesViewController {
             self.alreadyDisconnected = true
             self.mRef.removeAllObservers()
             self.mRef.removeValue()
-            self.perform(#selector(self.showSearchView), with: nil, afterDelay: 0.0)
+            
+            self.darkenView()
+            self.showSearchView(animated: true)
+
             
         }
         
@@ -646,9 +864,9 @@ class MessagingViewController: JSQMessagesViewController {
             self.mRef.removeAllObservers()
             self.mRef.removeValue()
             
+            self.darkenView()
+            self.showStartView(animated: true)
             
-            
-             self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
             
         }
         alertController.addAction(CancelAction)
@@ -664,17 +882,35 @@ class MessagingViewController: JSQMessagesViewController {
     //set overlayView visible with black alpha background
     func darkenView(){
         
-        self.overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
+        self.overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.3)
         
         self.overlayView.isHidden = false
         
     }
+    
+//    func navigationController(_ navigationController:UINavigationController,
+//                              animationControllerFor operation: UINavigationControllerOperation,
+//                              from fromVC: UIViewController,
+//                              to toVC:UIViewController) -> UIViewControllerAnimatedTransitioning?
+//    {
+//        
+//        
+//        if (operation == UINavigationControllerOperation.push){
+//            return PushAnimator.init()
+//        }
+//        
+//        if (operation == UINavigationControllerOperation.pop){
+//            return PopAnimator.init()
+//        }
+//        return nil
+//        
+//    }
 
 }
 
 
 // MARK: Image Picker Delegate
-extension MessagingViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension MessagingViewController: UIImagePickerControllerDelegate {
     
 
     func imagePickerController(_ picker: UIImagePickerController,
@@ -786,6 +1022,12 @@ extension MessagingViewController: UIImagePickerControllerDelegate, UINavigation
         picker.dismiss(animated: true, completion:nil)
         
     }
+    
+    
+    
+    
+    
+    
 }
 
 
