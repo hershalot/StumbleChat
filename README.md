@@ -1,5 +1,5 @@
 # WoolyBear (initially called StumbleChat)
-Randomly pair with another user and chat - IOS
+Randomly pair with another user and chat - IOS (Disclaimer - As is this will not be accepted by the AppStore as it violates SAFETY - 1.2 - USER GENERATED CONTENT)
 
 A basic chat matching application using Firebase. 
 
