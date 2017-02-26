@@ -5,10 +5,12 @@
 //  Created by Justin Hershey on 2/13/17.
 //  Copyright © 2017 Fenapnu. All rights reserved.
 //
-//  ViewController that watches for changes to the messagingChannel in Firebase and displays messages while both users are connected
+//  ViewController that observes changes to the messagingChannel in Firebase and displays messages while both users are connected
+
+//  Implements JSQMessagesController, Firebase Storage for pictures
 //
-//  Segues -> toStartView -- swipe Right to disconnect and return to the StartViewController
-//         -> toSearchView -- swipe Left to disconnect and start searching for another person to chat to
+//  -- Pan Right to disconnect and return to the StartViewController
+//  -- Pan Left to disconnect and start searching for another person to chat to
 //
 //
 //
@@ -59,8 +61,8 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
     //Connected Users displayName Label
     @IBOutlet weak var displayNameLbl: UILabel!
     
-    
-    
+    //status bar height variable
+    var statusHeight: CGFloat!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,19 +80,20 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         
         
         self.inputToolbar.contentView.rightBarButtonItem.setTitleColor(.white, for: .normal)
-//        self.inputToolbar.contentView.leftBarButtonItem.setTitleColor(.white, for: .reserved)
         
         
         //Pan Gesture setup
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.respondToPanGesture))
         self.view.addGestureRecognizer(panGesture)
         
+        
+        //Top Name Label Setup
         self.displayNameLbl.text = "chatting with " + self.senderDisplayName + "..."
         self.displayNameLbl.textColor = UIColor.lightGray
         self.displayNameLbl.backgroundColor = UIColor.clear
         self.displayNameLbl.textAlignment = .center
         
-        let statusHeight: CGFloat = UIApplication.shared.statusBarFrame.height
+        statusHeight = UIApplication.shared.statusBarFrame.height
         
         self.displayNameLbl.frame = CGRect(x: self.view.frame.origin.x, y: statusHeight, width: self.view.frame.size.width, height: 20)
 
@@ -114,8 +117,9 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         
         
         
-        
+        //setting navController delegate to give the non-Pan navigation an animation
         self.navigationController?.delegate = self;
+        
         //begin messaging Channel Observer
         observeMessages()
         
@@ -131,9 +135,15 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         //setting the pan right image as
         startView = UIImageView.init(frame: CGRect(x: -self.view.frame.width, y: 0, width: self.view.frame.width, height:self.view.frame.height))
         
+        
+        //getting the search view to display on the right hand side of the message for panning navigation
         searchVC = self.storyboard?.instantiateViewController(withIdentifier: "searchView") as! SearchViewController
         searchView = searchVC.view
         searchView.frame = CGRect(x:self.view.frame.width, y: 0, width: self.view.frame.width, height:self.view.frame.height)
+        
+        
+        //setting a picture of the start view as the leftSide view, could maybe call the rootviewcontroller and get
+        // the view that way
         startView.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 0.9)
         startView.contentMode = .scaleToFill
         startView.image = UIImage(named: "startScreen")
@@ -141,15 +151,16 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         self.view.addSubview(startView)
         self.view.addSubview(searchView)
         
-        
+        //setting searchVC to nil so it doesn't start searching on a non complete pan nav gesture
         searchVC = nil
     }
     
     
-    //resize the Collection View so it doesn't overlap the displayName label
+    
     override func viewDidLayoutSubviews() {
         
-        let statusHeight: CGFloat = UIApplication.shared.statusBarFrame.height
+        
+        //resize the Collection View so it doesn't overlap the displayName label at the top
         self.collectionView.frame = CGRect(x: 0, y: statusHeight + 20.0, width: self.view.frame.size.width, height: self.collectionView.frame.height - (statusHeight + 20.0))
         
     }
@@ -160,8 +171,11 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         
         print("App Moving to Inactive")
         
+        //remove observers here otherwise sending the message will cause the disconnect message to display for the user who did the initial disconnect
         self.mRef.removeAllObservers()
-
+        
+        
+        //send unique disconnect message
         if (!alreadyDisconnected){
             
             let itemRef = mRef.childByAutoId()
@@ -175,7 +189,8 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
             finishSendingMessage()
             
         }
-
+        
+        
         mRef.removeValue()
         try! FIRAuth.auth()!.signOut()
         
@@ -232,7 +247,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
     }
 
     
-    
+    //remove remaining observers on deinitialization
     deinit {
         
         if let refHandle = newMessageRefHandle {
@@ -266,7 +281,11 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
 
     
     
-    //JSQMessaging/CollectionView Delegate Methods
+    /*
+     *
+     *   JSQMESSAGING/CollectionView Delegate Methods
+     *
+     */
     
     override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageDataForItemAt indexPath: IndexPath!) -> JSQMessageData! {
         return messages[indexPath.item]
@@ -330,8 +349,8 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
     
     
     /*
-     * Current Functionality -> Attatch Photo, Take/Send Photo. No video or location
      *
+     * Current Functionality -> Attatch Photo, Take/Send Photo.
      *
      */
     
@@ -375,7 +394,6 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         
     }
     
-    
  
     //sets the image URL as the message in the mesageingChannel
     func setImageURL(_ url: String, forPhotoMessageWithKey key: String) {
@@ -400,6 +418,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         return itemRef.key
     }
     
+    
     func addMedia(_ media:JSQMediaItem) {
         
         let message = JSQMessage(senderId: self.senderId, displayName: self.senderDisplayName, media: media)
@@ -417,7 +436,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         let messageQuery = mRef.queryLimited(toLast:25)
         
         newMessageRefHandle = messageQuery.observe(.childAdded, with: { (snapshot) -> Void in
-            // 3
+
             let messageData = snapshot.value as! Dictionary<String, AnyObject>
             
             if let id = messageData["senderId"] as! String!, let name = messageData["senderName"] as! String!, let text = messageData["text"] as! String!, text.characters.count > 0 {
@@ -430,7 +449,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
                 //placeholder message
                 }else if (text == "1-2-3-4-5-") {
                     
-                    //do not display, this is just so we don't prematurely disconnect the users when one sends the app to the background before sending any messages
+                    //don't display anything, this is just so we don't prematurely disconnect the users when one sends the app to the background before sending any messages
                     
                 }
                 
@@ -552,7 +571,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
     
     
     
-    
+    //resign the keyboard and popToRoot which is always the startViewController
     func showStartView(animated: Bool){
         
         self.resignFirstResponder()
@@ -578,7 +597,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         if (gesture.state == .began || gesture.state == .changed) {
             
             
-            
+            //only translate along the x axiz
             
             gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
             
@@ -597,7 +616,6 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
             if (velocity.x > 1300){
                 
                 print("animation velocity reached")
-//                let tempCenter = gesture.view!.center.x
                 
                 UIView.animate(withDuration: 0.4,
                                delay: 0.0,
@@ -628,7 +646,6 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
                                 
                                 self.darkenView()
                                 self.showStartView(animated: false)
-//                                self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
                                 
                                 
                 })
@@ -640,7 +657,6 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
             else if (velocity.x < -1300){
                 
                 print("animation velocity reached")
-//                let tempCenter = gesture.view!.center.x
                 
                 UIView.animate(withDuration: 0.4,
                                delay: 0.0,
@@ -673,14 +689,13 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
                                 }
                                 self.darkenView()
                                 self.showSearchView(animated: false)
-//                                self.perform(#selector(self.showSearchView), with: nil, afterDelay: 0.0)
                                 
                 })
                 
                 
             }
                 
-                //on before middle of screen, stay in search view
+            //on before middle of screen, stay in search view
             else if (self.view.frame.minX <= 0 && self.view.frame.minX >= -self.view.frame.width/2){
                 
                 let tempCenter = gesture.view!.center.x
@@ -737,7 +752,6 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
                                 }
                                 self.darkenView()
                                 self.showSearchView(animated: false)
-//                                self.perform(#selector(self.showSearchView), with: nil, afterDelay: 0.0)
                                 
                                 
                 })
@@ -805,10 +819,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
                                 }
                                 self.darkenView()
                                 self.showStartView(animated: false)
-//                                self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
-
-                                    
-                                    
+            
                                 
                 })
                 
@@ -824,7 +835,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
     func disconnected(){
         
         self.mRef.removeAllObservers()
-//        self.deinit()
+        
         let alertController = UIAlertController(title: "User Disconnected", message: "Find another?", preferredStyle: .alert)
         
         let OKAction = UIAlertAction(title: "Go", style: .default) { action in
@@ -869,6 +880,8 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
         
     }
     
+    
+    //Navigation Controller Delegate Method
     func navigationController(_ navigationController:UINavigationController,
                               animationControllerFor operation: UINavigationControllerOperation,
                               from fromVC: UIViewController,
@@ -890,7 +903,7 @@ class MessagingViewController: JSQMessagesViewController, UINavigationController
 }
 
 
-// MARK: Image Picker Delegate
+// MARK: Extension -> Image Picker Delegate
 extension MessagingViewController: UIImagePickerControllerDelegate {
     
 

@@ -5,7 +5,7 @@
 //  Created by Justin Hershey on 2/14/17.
 //  Copyright © 2017 Fenapnu. All rights reserved.
 //
-//  Custom Segue for bringing a viewcontroller into view from the right with bouncing
+//  Custom Animation for pushing a viewcontroller onto the stack, animates from the right with bouncing
 //
 //
 
@@ -25,17 +25,8 @@ class PushAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
         transitionContext.containerView.addSubview(toViewController.view)
         toViewController.view.transform = CGAffineTransform(translationX: toViewController.view.frame.size.width, y: 0)
-//        toViewController.view.alpha = 0.0;
-//    
-//    [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
-//        toViewController.view.alpha = 1.0;
-//    } completion:^(BOOL finished) {
-//    [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
-//    }];
-//    }
+
     
-        
-        
         UIView.animate(withDuration: self.transitionDuration(using: transitionContext),
                             delay: 0.0,
             usingSpringWithDamping: 0.6,

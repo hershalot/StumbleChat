@@ -5,7 +5,7 @@
 //  Created by Justin Hershey on 2/15/17.
 //  Copyright © 2017 Fenapnu. All rights reserved.
 
-//  Custom Segue for bringing a viewcontroller into view from the left with bouncing
+//  Custom Animation for popping a ViewController from the navigation stack for bringing a viewcontroller into view from the left with bouncing
 //
 
 import Foundation

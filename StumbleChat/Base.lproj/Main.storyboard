@@ -145,14 +145,6 @@
                                             <constraint firstAttribute="width" secondItem="oyx-Ds-BPb" secondAttribute="height" multiplier="1:1" id="EcV-fL-9d1"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ueY-vr-wXH">
-                                        <rect key="frame" x="93.5" y="0.0" width="93.5" height="93.5"/>
-                                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="0.63045247400000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Cfu-aq-ely">
-                                        <rect key="frame" x="0.5" y="93.5" width="93" height="93"/>
-                                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="0.63045247400000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ybg-jN-2bn">
                                         <rect key="frame" x="93.5" y="93.5" width="93.5" height="93"/>
                                         <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="0.63045247400000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -161,58 +153,37 @@
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="0.63045247400000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstItem="Ybg-jN-2bn" firstAttribute="width" secondItem="oyx-Ds-BPb" secondAttribute="height" multiplier="1:1" id="3tc-w0-UG7"/>
-                                    <constraint firstItem="Cfu-aq-ely" firstAttribute="leading" secondItem="oyx-Ds-BPb" secondAttribute="leading" id="5Cl-Ee-nar"/>
-                                    <constraint firstItem="ueY-vr-wXH" firstAttribute="width" secondItem="oyx-Ds-BPb" secondAttribute="width" id="8sX-1s-ep0"/>
                                     <constraint firstItem="Ybg-jN-2bn" firstAttribute="height" secondItem="oyx-Ds-BPb" secondAttribute="height" id="BtN-gP-f9N"/>
-                                    <constraint firstItem="Ybg-jN-2bn" firstAttribute="top" secondItem="ueY-vr-wXH" secondAttribute="bottom" id="ELU-tR-Xvw"/>
+                                    <constraint firstItem="Ybg-jN-2bn" firstAttribute="leading" secondItem="oyx-Ds-BPb" secondAttribute="trailing" id="DCI-5a-QPD"/>
                                     <constraint firstItem="oyx-Ds-BPb" firstAttribute="width" secondItem="yoX-XT-bUu" secondAttribute="width" multiplier="0.5" id="FHY-zw-jF6"/>
-                                    <constraint firstItem="ueY-vr-wXH" firstAttribute="width" secondItem="oyx-Ds-BPb" secondAttribute="height" multiplier="1:1" id="PG0-Xc-oTO"/>
-                                    <constraint firstItem="ueY-vr-wXH" firstAttribute="height" secondItem="oyx-Ds-BPb" secondAttribute="height" id="WMX-g3-Qn7"/>
-                                    <constraint firstItem="Cfu-aq-ely" firstAttribute="width" secondItem="oyx-Ds-BPb" secondAttribute="height" multiplier="1:1" id="YzZ-Cb-CVh"/>
-                                    <constraint firstItem="ueY-vr-wXH" firstAttribute="leading" secondItem="oyx-Ds-BPb" secondAttribute="trailing" id="c4B-qp-VvP"/>
-                                    <constraint firstItem="Cfu-aq-ely" firstAttribute="width" secondItem="oyx-Ds-BPb" secondAttribute="width" id="do6-14-wSR"/>
+                                    <constraint firstItem="Ybg-jN-2bn" firstAttribute="top" secondItem="oyx-Ds-BPb" secondAttribute="bottom" id="dmY-tA-Vgc"/>
                                     <constraint firstItem="oyx-Ds-BPb" firstAttribute="leading" secondItem="yoX-XT-bUu" secondAttribute="leading" id="fwh-kK-QCa"/>
                                     <constraint firstItem="Ybg-jN-2bn" firstAttribute="width" secondItem="oyx-Ds-BPb" secondAttribute="width" id="jZi-cu-KBW"/>
-                                    <constraint firstItem="ueY-vr-wXH" firstAttribute="top" secondItem="oyx-Ds-BPb" secondAttribute="top" id="nCA-eQ-mCB"/>
                                     <constraint firstAttribute="width" secondItem="yoX-XT-bUu" secondAttribute="height" multiplier="48:41" id="pQQ-E0-7Bd"/>
-                                    <constraint firstItem="Cfu-aq-ely" firstAttribute="top" secondItem="oyx-Ds-BPb" secondAttribute="bottom" id="qzq-uc-0c1"/>
                                     <constraint firstItem="oyx-Ds-BPb" firstAttribute="top" secondItem="yoX-XT-bUu" secondAttribute="top" id="rYM-yC-0us"/>
-                                    <constraint firstItem="Cfu-aq-ely" firstAttribute="height" secondItem="oyx-Ds-BPb" secondAttribute="height" id="vVq-QS-wnh"/>
-                                    <constraint firstItem="Ybg-jN-2bn" firstAttribute="leading" secondItem="Cfu-aq-ely" secondAttribute="trailing" id="wHk-nr-LzT"/>
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Searching..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Acz-oI-Xiv">
-                                <rect key="frame" x="108.5" y="192.5" width="159" height="31.5"/>
+                                <rect key="frame" x="19" y="560" width="337.5" height="32"/>
                                 <fontDescription key="fontDescription" name="Arial-BoldItalicMT" family="Arial" pointSize="28"/>
                                 <color key="textColor" red="0.20784313730000001" green="0.84111870659999999" blue="0.51614040800000005" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connecting to User..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mRU-uP-eTv">
-                                <rect key="frame" x="0.0" y="464" width="375" height="21.5"/>
-                                <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="19"/>
-                                <color key="textColor" red="0.20784313730000001" green="0.83921568629999999" blue="0.51764705879999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="0.63045247400000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="mRU-uP-eTv" firstAttribute="top" secondItem="yoX-XT-bUu" secondAttribute="bottom" constant="50" id="EcS-rz-A1M"/>
                             <constraint firstItem="Acz-oI-Xiv" firstAttribute="centerX" secondItem="2qN-OP-EXa" secondAttribute="centerX" id="GNL-Ef-lYD"/>
                             <constraint firstItem="yoX-XT-bUu" firstAttribute="centerX" secondItem="2qN-OP-EXa" secondAttribute="centerX" id="I6S-Hu-YMH"/>
-                            <constraint firstItem="mRU-uP-eTv" firstAttribute="centerX" secondItem="2qN-OP-EXa" secondAttribute="centerX" id="KGT-JE-XCN"/>
-                            <constraint firstItem="yoX-XT-bUu" firstAttribute="top" secondItem="Acz-oI-Xiv" secondAttribute="bottom" constant="30" id="RIO-Ja-kEL"/>
                             <constraint firstItem="yoX-XT-bUu" firstAttribute="centerY" secondItem="2qN-OP-EXa" secondAttribute="centerY" id="XgK-Ec-mfz"/>
+                            <constraint firstItem="Acz-oI-Xiv" firstAttribute="width" secondItem="2qN-OP-EXa" secondAttribute="width" multiplier="0.9" id="YXP-0N-aco"/>
                             <constraint firstItem="yoX-XT-bUu" firstAttribute="width" secondItem="2qN-OP-EXa" secondAttribute="width" multiplier="0.5" id="lLA-eP-SHX"/>
-                            <constraint firstItem="mRU-uP-eTv" firstAttribute="width" secondItem="2qN-OP-EXa" secondAttribute="width" id="qfK-7V-okI"/>
+                            <constraint firstItem="Uc0-iY-Im2" firstAttribute="top" secondItem="Acz-oI-Xiv" secondAttribute="bottom" constant="75.5" id="pbw-9x-wjh"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="bottomLeftIndicator" destination="Cfu-aq-ely" id="9CF-ra-n3i"/>
                         <outlet property="bottomRightIndicator" destination="Ybg-jN-2bn" id="zMi-2i-5aA"/>
-                        <outlet property="connectingLbl" destination="mRU-uP-eTv" id="e3c-UF-e3I"/>
                         <outlet property="mainSearchLbl" destination="Acz-oI-Xiv" id="GBE-bm-egz"/>
                         <outlet property="topLeftIndicator" destination="oyx-Ds-BPb" id="Brv-Is-d0E"/>
-                        <outlet property="topRightIndicator" destination="ueY-vr-wXH" id="ygy-gE-ve7"/>
                         <segue destination="VfU-hC-DoX" kind="custom" identifier="toMessagingView" customClass="SegueFromLeft" customModule="StumbleChat" customModuleProvider="target" id="lvX-HY-20b"/>
                         <segue destination="OYK-P8-cTY" kind="custom" identifier="toStartView" customClass="SegueFromLeft" customModule="StumbleChat" customModuleProvider="target" id="Nac-cy-fPn"/>
                     </connections>

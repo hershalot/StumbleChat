@@ -43,6 +43,7 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     //mark Actions
     @IBAction func startChattingAction(_ sender: Any) {
         
+        
         startChat(animated: true)
         
     }
@@ -70,18 +71,17 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         displayNameText.layer.addSublayer(border)
         displayNameText.layer.masksToBounds = true
         
+        //add left and right subviews for panning navigation
         leftView = UIView.init(frame: CGRect(x: 0 - self.view.frame.size.width, y:0, width:self.view.frame.size.width, height: self.view.frame.size.height ))
         leftView.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 0.9)
+        
+        
         
         searchVC = self.storyboard?.instantiateViewController(withIdentifier: "searchView") as! SearchViewController
         searchView = searchVC.view
         searchView.frame = CGRect(x: self.view.frame.size.width, y:0, width: searchView.frame.size.width, height: searchView.frame.size.height)
         self.view.addSubview(leftView)
         self.view.addSubview(searchView)
-        
-        
-//        
-//        self.chatBtn.frame = CGRect(x:0, y: self.view.frame.size.height - (self.view.frame.height * 0.6),width: self.view.frame.size.width , height:self.view.frame.height * 0.4 )
         
         
         
@@ -104,7 +104,6 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         //need to capture view Of SearchView, then set VC to nil otherwise searching starts on Pan
         // IS THERE A BETTER WAY TO DO THIS?
 
-        
         searchVC = nil
         
         self.navigationController?.delegate = self
@@ -133,6 +132,8 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         }
     }
     
+    
+    
     /*
     *Center the bearImage between the DisplayNameText and the topLayoutGuide
     */
@@ -156,7 +157,9 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     
     
     /*
-     * startChat() --> Checks to make sure user entered a displayName, performs toSearchView segue if so
+     * startChat() --> Checks to make sure user entered a displayName, calls toSearchView method if so
+     * Boolean argument is true if startChat is called from the startChatButton being pressed. Otherwise the panning
+     * navigation handles the animation and the argument should be false
      */
     
     func startChat(animated: Bool){
@@ -185,10 +188,16 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         }
         
     }
+    //set side views to nil and push the SearchViewController onto the main NavController stack
+    
+    /*
+     
+     Takes a BOOL argument. If showSearchView was called from panning gesture the navigationDelegate should not handle the navigation, therefore it will pass false. If the button is pressed, navigationDelegate should handle the navigation and the argument should be true.
+    
+    */
     
     func showSearchView(animated: Bool){
         
-//        darkenView()
         
         searchVC = self.storyboard?.instantiateViewController(withIdentifier: "searchView") as! SearchViewController
         
@@ -224,9 +233,9 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
         introView.backgroundColor = UIColor.init(red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.8)
 
         introView.delegate = self
-        
         introView.show(in: self.view)
     }
+    
     
     //On intro finished set "isFirstRun" key to false so the introView won't show again on launch
     func introDidFinish(_ introView: EAIntroView!, wasSkipped: Bool) {
@@ -248,7 +257,7 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     
     
     
-    //set 
+    //set dark overlay
     func darkenView(){
         
         
@@ -282,32 +291,32 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     }
     
     
-    
+    /*
+ 
+ 
+     * Pan Left will show the searchViewController, while Pan right does nothing at this point other than show a blank 
+     * view and animate the startView on pan ended. 
+     *
+ 
+     */
+
     func respondToPanGesture(gesture: UIPanGestureRecognizer){
         
 
         let velocity = gesture.velocity(in: self.view)
         let translation = gesture.translation(in: self.view)
 
-
         
         if (gesture.state == .began || gesture.state == .changed) {
-            
-            
             
             
             gesture.view!.center = CGPoint(x: gesture.view!.center.x + translation.x, y: gesture.view!.center.y)
                 
             gesture.setTranslation(CGPoint.zero, in: self.view)
     
-
-
-            
-        
-
         }
         
-        
+        //on pan end, determine whether to change views or stay in current view. On change, do animation
         else if (gesture.state == .ended){
             
             //on swipe, goto searchView
@@ -337,9 +346,6 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
                             defaults.synchronize()
                             
                             self.showSearchView(animated: false)
-                            
-                            
-                            
                             
                         }else{
                             let tempCenter = gesture.view!.center.x
@@ -424,9 +430,7 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
                                             
                                             self.showSearchView(animated: false)
                                             
-                                            
-                                            
-                                            
+
                                         }else{
                                             let tempCenter = gesture.view!.center.x
                                             
@@ -436,7 +440,6 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
                                                            initialSpringVelocity: 0.4,
                                                            options: UIViewAnimationOptions.curveEaseInOut,
                                                            animations: {
-                                                            
                                                             
                                                             self.view.transform = CGAffineTransform(translationX: self.view.frame.size.width/2 - tempCenter, y: 0)
                                                             
@@ -471,9 +474,7 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     
     
 /*
-* Swipe Gesture Handler -> call startChat() on swipe left
-                        -> resignFirstResponder on swipe down to get rid of the keyboard
-                        -> Currently Disabled -- RightSwipe toAboutView
+* Swipe Gesture Handler -> resignFirstResponder on swipe down to get rid of the keyboard
 */
     
     func respondToSwipeGesture(gesture: UIGestureRecognizer) {
@@ -503,7 +504,7 @@ class StartViewController: UIViewController, UITextFieldDelegate, UIGestureRecog
     
     
     
-    //NAvigation Controller Animation Operation 
+    //Navigation Controller Delegate Method
     
     func navigationController(_ navigationController:UINavigationController,
                               animationControllerFor operation: UINavigationControllerOperation,

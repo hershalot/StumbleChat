@@ -4,6 +4,8 @@
 //
 //  Created by Justin Hershey on 2/20/17.
 //  Copyright © 2017 Fenapnu. All rights reserved.
+
+//  Main Naviagtion Controller with StartViewController as the Root View Controller.
 //
 
 import UIKit
@@ -25,16 +27,6 @@ class NavigationController: UINavigationController {
     }
     
     
-    
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

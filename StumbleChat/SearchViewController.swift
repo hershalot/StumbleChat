@@ -8,8 +8,8 @@
 //
 //  ViewController that displays a searching animation. Provides a medium to connect to another user
 
-//  Segues -> toMessagingView -> On connection, shows MessagingViewController with a unique messaging channel with the other user
-//         -> toStartView -> bySwipingRight - cancels search and returns to startView
+// -> On connection, shows MessagingViewController with a unique messaging channel with the other user
+// -> On panning right, cancels search and returns to startView
 //
 //
 
@@ -25,7 +25,7 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
     var userID: String = (FIRAuth.auth()?.currentUser?.uid)!
 
     var overlayView: UIView!
-    var boldHighlight: Int = 2;
+    var boldHighlight: Int = 1;
     
     //Timer for searching animation
     var SwiftTimer = Timer()
@@ -39,6 +39,7 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
     var passiveUsers: Int = -1
     var aggressiveUsers: Int = -1
     
+    //init sender info
     var senderName: String = "Test User"
     var senderID: String = "TestID"
     
@@ -48,6 +49,8 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
     
     //Current Users pool, will be either "AggressivePool" or "PassivePool"
     var myCurrentPool: String!
+    
+    //Side Panning Views
     var startImage: UIImageView!
     var rightView: UIView!
 
@@ -58,8 +61,6 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
     @IBOutlet weak var bottomLeftIndicator: UIView!
     @IBOutlet weak var bottomRightIndicator: UIView!
     
-    //Label that displays once a connection has begun to establish
-    @IBOutlet weak var connectingLbl: UILabel!
     
     @IBOutlet weak var mainSearchLbl: UILabel!
     
@@ -73,10 +74,9 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
         overlayView = UIView.init(frame: self.view.bounds)
         
         self.view.addSubview(overlayView)
-
+        
         rotateSearchLbl()
         self.rotateLabel.isHidden = false
-        self.connectingLbl.isHidden = true
         self.mainSearchLbl.isHidden = true
         
     
@@ -87,29 +87,21 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
         
     }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        
-//        
-//        self.topLeftIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
-//        self.bottomRightIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 0.7)
-//       
-//        
-//        
-//    }
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         ref = FIRDatabase.database().reference()
-//        self.navigationController?.delegate = self;
+        
+        //initally hide lables except mainSearchLbl
         self.overlayView.isHidden = true
         self.rotateLabel.isHidden = true
         self.mainSearchLbl.isHidden = false
         
-        
+        //delegate navController for animations when navigating without panning
         self.navigationController?.delegate = self
+        
         //setting the pan right image as
         startImage = UIImageView.init(frame: CGRect(x: -self.view.frame.width, y: 0, width: self.view.frame.width, height:self.view.frame.height))
         
@@ -125,10 +117,10 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.respondToPanGesture))
         self.view.addGestureRecognizer(panGesture)
         
-
-        self.connectingLbl.isHidden = true
+        //Indicator Setup
         self.topLeftIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
         self.bottomRightIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 0.7)
+        
         
         //start searching animation
         self.startIndicator()
@@ -145,10 +137,8 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
             let defaultAction = UIAlertAction(title: "OK", style: .default){ action in
                 
                 self.showStartView(animated: true)
-//                self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
-                
-                
             }
+            
             alertController.addAction(defaultAction)
             
             present(alertController, animated: true, completion: nil)
@@ -157,6 +147,34 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
         
     }
     
+
+    //Deletes User's Pool data and kicks user back to start screen
+    func appMovedToInactive(_ animated: Bool) {
+        
+        print("App Resigning")
+        self.showStartView(animated: true)
+        
+    }
+    
+    //Performs DB cleanup on app Termination, removes user's Pool data
+    func appWillTerminate(_ animated: Bool) {
+        
+        print("App Terminate")
+        let refWatch = ref.child(myCurrentPool).child(self.userID)
+        refWatch.removeAllObservers()
+        refWatch.removeValue()
+        try! FIRAuth.auth()!.signOut()
+        
+    }
+    
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+        
+    }
+    
+    //Rotate search label so panning left shows the label written vertically
     func rotateSearchLbl(){
         
         rotateLabel = UILabel(frame: CGRect(x:10, y:(self.view.frame.size.height/2 - 75), width:40, height:200))
@@ -177,34 +195,7 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
     
     
     
-    //Deletes User's Pool data and kicks user back to start screen
-    func appMovedToInactive(_ animated: Bool) {
-        
-        print("App Resigning")
-        self.showStartView(animated: true)
-//        self.perform(#selector(self.showStartView), with: nil, afterDelay: 0.0)
-        
-    }
     
-    //Performs DB cleanup on app Termination, removes user's Pool data
-    func appWillTerminate(_ animated: Bool) {
-        
-        print("App Terminate")
-        let refWatch = ref.child(myCurrentPool).child(self.userID)
-        refWatch.removeAllObservers()
-        refWatch.removeValue()
-        try! FIRAuth.auth()!.signOut()
-        
-    }
-
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-        
-        
-        
-    }
     
 
     //compares the two pool sizes and sets the users pool to the one with the least users
@@ -317,7 +308,7 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
                         if(matchedUserID == "none"){
                             
                             print("found Unmatched User, matching to current user")
-                            self.connectingLbl.isHidden = false
+                            self.mainSearchLbl.text = "Connecting to User..."
                             self.senderID = item.key
                             self.senderName = retrievedUser["name"] as! String
                             
@@ -368,7 +359,6 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
                     print("Matched to Aggressor")
                     
                     if (a != "none"){
-                        self.connectingLbl.isHidden = false
                         self.senderID = postDict["matchedToUserID"] as! String!
                         self.senderName = postDict["matchedToUserName"] as! String!
                         self.channelID = postDict["channelID"] as! String!
@@ -417,6 +407,7 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
     
     
     
+    //takes an animated Bool argument in the case it is called while not panning we can animate the pop with PopAnimator
     
     func showStartView(animated: Bool){
      
@@ -445,85 +436,109 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
     //start the custom loading indicator
     func startIndicator(){
         
-        self.SwiftTimer = Timer.scheduledTimer(timeInterval: 0.4, target:self, selector: #selector(self.moveSquares), userInfo: nil, repeats: true)
+        self.SwiftTimer = Timer.scheduledTimer(timeInterval: 0.3, target:self, selector: #selector(self.transformSquares), userInfo: nil, repeats: true)
         
     }
-    
-    
-    
     
     
 /*
 * Move squares for loading animation > Uses a timer
 */
-    func moveSquares(){
+    
+    func transformSquares(){
+        
+        
         
         if(self.boldHighlight == 1){
-            
-            self.topLeftIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
-            self.bottomRightIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 0.6)
-            
-            //set other squares back to clear background
-            self.topRightIndicator.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
-            self.bottomLeftIndicator.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
-            
-            
-            self.boldHighlight = 2
-            
-            
+            UIView.animate(withDuration: 0.3,
+                           delay: 0.0,
+//                           usingSpringWithDamping: 0.8,
+//                           initialSpringVelocity: 0.4,
+                           options: UIViewAnimationOptions.curveEaseInOut,
+                           animations: {
+
+                            self.topLeftIndicator.transform = CGAffineTransform(translationX: self.topLeftIndicator.frame.width, y: 0)
+                            self.bottomRightIndicator.transform = CGAffineTransform(translationX:  -self.bottomRightIndicator.frame.width, y: 0)
+                        
+                    },
+                       completion: { finished in
+                            self.boldHighlight = 2
+                        
+                        
+            })
         }
+        
         else if(self.boldHighlight == 2){
-            
-            self.topRightIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
-            self.bottomLeftIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 0.6)
-            
-            
-            //set other squares back to clear background
-            self.topLeftIndicator.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
-            self.bottomRightIndicator.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
-            
-            self.boldHighlight = 3
+            UIView.animate(withDuration: 0.3,
+                           delay: 0.0,
+//                           usingSpringWithDamping: 0.8,
+//                           initialSpringVelocity: 0.4,
+                           options: UIViewAnimationOptions.curveEaseInOut,
+                           animations: {
+                            //                        toViewController.view.alpha = 1.0;
+                            self.topLeftIndicator.transform = CGAffineTransform(translationX: self.topLeftIndicator.frame.width, y: self.topLeftIndicator.frame.height)
+                            self.bottomRightIndicator.transform = CGAffineTransform(translationX: -self.topLeftIndicator.frame.width, y: -self.bottomRightIndicator.frame.height)
+                            
+            },
+                           completion: { finished in
+                            self.boldHighlight = 3
+                            
+                            
+            })
         }
-            
+        
         else if(self.boldHighlight == 3){
-            
-            self.bottomRightIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
-            self.topLeftIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 0.6)
-            
-            
-            //set other squares back to clear background
-            self.topRightIndicator.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
-            self.bottomLeftIndicator.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
-            
-            
-            self.boldHighlight = 4
-            
+            UIView.animate(withDuration: 0.3,
+                           delay: 0.0,
+//                           usingSpringWithDamping: 0.8,
+//                           initialSpringVelocity: 0.4,
+                           options: UIViewAnimationOptions.curveEaseInOut,
+                           animations: {
+                            //                        toViewController.view.alpha = 1.0;
+//                            self.topLeftIndicator.transform = CGAffineTransform(translationX: -self.topLeftIndicator.frame.width, y: self.topLeftIndicator.frame.height)
+//                            self.bottomRightIndicator.transform = CGAffineTransform(translationX: self.bottomRightIndicator.frame.width, y: -self.bottomRightIndicator.frame.height)
+                            
+                            self.topLeftIndicator.transform = CGAffineTransform(translationX: 0, y: self.topLeftIndicator.frame.height)
+                            self.bottomRightIndicator.transform = CGAffineTransform(translationX: 0, y: -self.bottomRightIndicator.frame.height)
+                            
+            },
+                           completion: { finished in
+                            self.boldHighlight = 4
+                            
+                            
+            })
         }
-            
         else if(self.boldHighlight == 4){
-            
-            self.bottomLeftIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 1.0)
-            self.topRightIndicator.backgroundColor = UIColor.init(red: 53.0/255.0, green: 214.0/255.0, blue: 132.0/255.0, alpha: 0.6)
-            
-            //set other squares back to clear background
-            self.topLeftIndicator.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
-            self.bottomRightIndicator.backgroundColor = UIColor.init(red: 0.0/255.0, green: 122.0/255.0, blue: 161.0/255.0, alpha: 1.0)
-            
-            self.boldHighlight = 1
-            
-            
+            UIView.animate(withDuration: 0.3,
+                           delay: 0.0,
+//                           usingSpringWithDamping: 0.8,
+//                           initialSpringVelocity: 0.4,
+                           options: UIViewAnimationOptions.curveEaseInOut,
+                           animations: {
+                            //                        toViewController.view.alpha = 1.0;
+//                            self.topLeftIndicator.transform = CGAffineTransform(translationX: 0, y: -self.topLeftIndicator.frame.height)
+//                            self.bottomRightIndicator.transform = CGAffineTransform(translationX: 0, y: self.bottomRightIndicator.frame.height)
+                            self.topLeftIndicator.transform = CGAffineTransform(translationX: 0, y:0)
+                            self.bottomRightIndicator.transform = CGAffineTransform(translationX: 0, y:0)
+                            
+            },
+                           completion: { finished in
+                            self.boldHighlight = 1
+                            
+                            
+            })
         }
-        
-        
         
     }
     
     
     
 /*
- * Swipe Direction Handler
- * Right -> toStartView
- * Left -> toSearchView
+ * Pan Direction Handler
+ * Right Fast Pan -> toStartView
+ * Left fast Pan -> toSearchView
+ *
+ *  Only translates along X axis
  */
     
     
@@ -559,7 +574,6 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
             if (velocity.x > 1300){
                 
                 print("animation velocity reached")
-//                let tempCenter = gesture.view!.center.x
                 darkenView()
                 UIView.animate(withDuration: 0.4,
                                delay: 0.0,
@@ -646,50 +660,15 @@ class SearchViewController: UIViewController, UINavigationControllerDelegate {
         
     }
     
-
+    //sets overlayview background to blackan alpha channel, set's hidden to false
     func darkenView(){
-        
-        //darken this view
         
         overlayView.backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.3)
         self.overlayView.isHidden = false
 
     }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-
-        
-        
-        
-        if(segue.identifier == "toMessagingView"){
-            
-            //remove my pool data
-            ref.child(myCurrentPool).child(userID).removeValue()
-            
-//            let dnc = segue.destination as! UINavigationController
-//            let mvc: MessagingViewController = dnc.topViewController as! MessagingViewController
-            
-            
-            let mvc:MessagingViewController = segue.destination as! MessagingViewController
-            
-            mvc.senderId = self.userID
-            mvc.senderDisplayName = self.senderName
-            mvc.connectedUsersId = self.senderID
-            mvc.channelID = self.channelID
-            stopIndicator()
-            
-            
-        }
-        if(segue.identifier == "toStartView"){
-            
-            stopIndicator()
-            ref.child(self.myCurrentPool).child(self.userID).removeValue()
-
-            
-        }
-        
-    }
     
+    //Navigation Controller delegate Method
     func navigationController(_ navigationController:UINavigationController,
                               animationControllerFor operation: UINavigationControllerOperation,
                               from fromVC: UIViewController,
